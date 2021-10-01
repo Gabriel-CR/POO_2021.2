@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 /*
 FLUXO DA APLICAÇÃO:
@@ -30,6 +31,8 @@ int menu01(){
 
     std::cout << "ESCOLA UMA DAS OPCOES:\n[1] Busca\n[2] Melhor \n[3] Contagem\n\nSua escolha: ";
     std::cin >> opcao;
+
+    system("cls");
     
     return opcao;
 }
@@ -40,23 +43,54 @@ int busca(){
     std::cout << "[1] Alguem com o valor X esta na fila?\n[2] Quantas vezes o valor X apareceu na fila?\n[3] Em que posicao da fila aparece X pela primeira vez?\n[4] Dada a posicao para iniciar a busca, qual a proxima posicao em que aparece X?\n\nSua escolha: ";
     std::cin >> opcao;
 
+    system("cls");
+
     return opcao;
 }
 
 int melhorCaso(){
     int opcao { 0 };
 
-    std::cout << "[1] Qual o menor valor da lista?\n[2] Qual o maior valor da lista?\n[3] Qual a posicao do menor valor da lista?\n[4] Qual a posicao do menor valor da lista depois da posicao P?\n[5] Qual a posicao do HOMEM mais calmo? (menor valor maior que 0)\n\nSua escolha: ";
+    std::cout << "[1] Qual a media de stress da fila? (abs)\n[2] Qual o maior valor da lista?\n[3] Qual a posicao do menor valor da lista?\n[4] Qual a posicao do menor valor da lista depois da posicao P?\n[5] Qual a posicao do HOMEM mais calmo? (menor valor maior que 0)\n\nSua escolha: ";
     std::cin >> opcao;
+
+    system("cls");
 
     return opcao;
 }
 
 int contagem(){
+    int opcao { 0 };
 
+    std::cout << "[1] Qual o menor valor da lista?\n[2] Na fila existem mais homens ou mulheres?\n[3] O nivel de stress somado de todas as pessoas da primeira metade e maior que o nivel de stress somado das pessoas da segunda metade da fila? (abs)\n[4] A media do stress dos homens e maior que a das mulheres?\n\nSua escolha: ";
+    std::cin >> opcao;
+
+    system("cls");
+
+    return opcao;
+}
+
+std::vector<int> popularFila(std::string linha){
+    std::stringstream ss {linha};
+
+    int pessoas {};
+    std::vector<int> v;
+
+    while (ss >> pessoas)
+        v.push_back(pessoas);
+
+    return v;
 }
 
 int main() {
+    //RECEBENDO ELEMENTOS DA FILA DO USUÁRIO
+    std::cout << "Digite as pessoas presentes na fila (separados por espacos): \n";
+    std::string entrada;
+    getline(std::cin, entrada);
+    std::vector<int> elementosDaFila { popularFila(entrada) };
+
+    system("cls");
+
     int opcaoMenu01 { 0 };
     int opcaoMenu02 { 0 };
 
@@ -80,7 +114,11 @@ int main() {
         break;
     }
 
-    std::cout << opcaoMenu02 << '\n';
+
+    // AREA DE TESTES
+    for (int i = 0; i < (int) elementosDaFila.size(); i++) {
+        std::cout << elementosDaFila[i] << '\n';
+    }
 
     return 0;
 }
