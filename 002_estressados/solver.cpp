@@ -37,11 +37,32 @@ int menu01(){
     return opcao;
 }
 
-int busca(){
+int busca(std::vector<int> v){
     int opcao { 0 };
 
     std::cout << "[1] Alguem com o valor X esta na fila?\n[2] Quantas vezes o valor X apareceu na fila?\n[3] Em que posicao da fila aparece X pela primeira vez?\n[4] Dada a posicao para iniciar a busca, qual a proxima posicao em que aparece X?\n\nSua escolha: ";
     std::cin >> opcao;
+
+    switch (opcao) {
+    // existe
+    case 1:
+        int proc { 0 };
+        std::cout << "Digite o valor procurado: ";
+        std::cin >> proc;
+        break;
+    // contar
+    case 2:
+        
+        break;
+    // procurar_valor
+    case 3:
+        
+        break;
+    // procurar_valor_apos
+    case 4:
+        
+        break;
+    }
 
     system("cls");
 
@@ -99,7 +120,7 @@ int main() {
     switch (opcaoMenu01) {
     //[1] Busca
     case 1:
-        opcaoMenu02 = busca();
+        opcaoMenu02 = busca(elementosDaFila);
         break;
     //[2] Melhor caso
     case 2:
@@ -113,7 +134,6 @@ int main() {
         std::cout << "[ERRO] Escolha uma opcao valida!";
         break;
     }
-
 
     // AREA DE TESTES
     for (int i = 0; i < (int) elementosDaFila.size(); i++) {
