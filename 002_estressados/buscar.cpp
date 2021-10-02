@@ -95,7 +95,7 @@ void procurarValorApos(std::vector<int> fila){
     std::cout << "Posicao para iniciar a procurar: ";
     std::cin >> posicaoIniciarProcura;
 
-    int posicao {(int) fila.size() + 1};
+    int posicao { (int) fila.size() + 1 };
     for (int i = posicaoIniciarProcura; i < (int) fila.size(); i++) {
         if (fila[i] == valorProcurado && i < posicao) {
             posicao = i;
