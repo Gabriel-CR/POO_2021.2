@@ -2,6 +2,8 @@
 #include <vector>
 #include <sstream>
 
+using std::vector;
+
 /*
 FLUXO DA APLICAÇÃO:
     ESCOLA UMA DAS OPÇÕES:
@@ -26,6 +28,18 @@ FLUXO DA APLICAÇÃO:
         [4] homens_sao_mais_estressados_que_mulheres: a média do stress dos homens é maior que a das mulheres?
 */
 
+std::vector<int> popularFila(std::string linha){
+    std::stringstream ss {linha};
+
+    int pessoas {};
+    std::vector<int> v;
+
+    while (ss >> pessoas)
+        v.push_back(pessoas);
+
+    return v;
+}
+
 int menu01(){
     int opcao { 0 };
 
@@ -37,70 +51,77 @@ int menu01(){
     return opcao;
 }
 
-int busca(std::vector<int> v){
-    int opcao { 0 };
-
-    std::cout << "[1] Alguem com o valor X esta na fila?\n[2] Quantas vezes o valor X apareceu na fila?\n[3] Em que posicao da fila aparece X pela primeira vez?\n[4] Dada a posicao para iniciar a busca, qual a proxima posicao em que aparece X?\n\nSua escolha: ";
-    std::cin >> opcao;
-
-    switch (opcao) {
-    // existe
+void menu02(int op, std::vector<int> fila){
+    switch (op) {
+    // BUSCA
     case 1:
-        int proc { 0 };
-        std::cout << "Digite o valor procurado: ";
-        std::cin >> proc;
+        busca(fila);
         break;
-    // contar
+    // MELHOR CASO
     case 2:
-        
         break;
-    // procurar_valor
+    // CONTAGEM
     case 3:
-        
-        break;
-    // procurar_valor_apos
-    case 4:
-        
         break;
     }
 
     system("cls");
-
-    return opcao;
 }
 
-int melhorCaso(){
-    int opcao { 0 };
+void busca(std::vector<int> fila){
+    int escolha { 0 };
+    std::cout << "ESCOLHA UMA DAS OPCOES: \n[1] Alguem com o valor X esta na fila?\n[2] Quantas vezes o valor X apareceu na fila?\n[3] Em que posicao da fila aparece X pela primeira vez?\n[4] Dada a posicao para iniciar a busca, qual a proxima posicao em que aparece X?\n\nSua escolha: ";
+    std::cin >> escolha;
 
-    std::cout << "[1] Qual a media de stress da fila? (abs)\n[2] Qual o maior valor da lista?\n[3] Qual a posicao do menor valor da lista?\n[4] Qual a posicao do menor valor da lista depois da posicao P?\n[5] Qual a posicao do HOMEM mais calmo? (menor valor maior que 0)\n\nSua escolha: ";
-    std::cin >> opcao;
+    int proc { 0 };
+    std::cout << "Digite o valor procurado: ";
+    std::cin >> proc;
 
-    system("cls");
+    switch (escolha) {
+    // existe
+    case 1:
+        for (int i = 0; i < (int) fila.size(); i++) {
+            if (fila[i] == proc) {
+                std::cout << "SIM";
+                break;
+            }
+        }
+        break;
+    // contar
+    case 2:
+        int cont { 0 };
 
-    return opcao;
-}
+        for (int i = 0; i < (int) fila.size(); i++) {
+            if (fila[i] == proc) {
+                cont++;
+            }
+        }
+        std::cout << "O valor " << proc << " aparece " << cont << " vezes";
+        break;
+    // procurar valor
+    case 3:
+        for (int i = 0; i < (int) fila.size(); i++) {
+            if (fila[i] == proc) {
+                std::cout << "O valor " << proc << " aparece primeiro na posicao " << i;
+                break;
+            }
+        }
+        break;
+    // procurar valor apos
+    case 4:
+        int val { 0 };
 
-int contagem(){
-    int opcao { 0 };
+        std::cout << "Digite o valor onde deve-se iniciar a busca: ";
+        std::cin >> val;
 
-    std::cout << "[1] Qual o menor valor da lista?\n[2] Na fila existem mais homens ou mulheres?\n[3] O nivel de stress somado de todas as pessoas da primeira metade e maior que o nivel de stress somado das pessoas da segunda metade da fila? (abs)\n[4] A media do stress dos homens e maior que a das mulheres?\n\nSua escolha: ";
-    std::cin >> opcao;
-
-    system("cls");
-
-    return opcao;
-}
-
-std::vector<int> popularFila(std::string linha){
-    std::stringstream ss {linha};
-
-    int pessoas {};
-    std::vector<int> v;
-
-    while (ss >> pessoas)
-        v.push_back(pessoas);
-
-    return v;
+        for (int i = val; i < (int) fila.size(); i++) {
+            if (fila[i] == proc) {
+                std::cout << "Iniciando da posicao " << val << " " << proc << " aparece na posicao " << i;
+                break;
+            }
+        }
+        break;
+    }
 }
 
 int main() {
@@ -120,20 +141,19 @@ int main() {
     switch (opcaoMenu01) {
     //[1] Busca
     case 1:
-        opcaoMenu02 = busca(elementosDaFila);
+        opcaoMenu02 = 1;
         break;
     //[2] Melhor caso
     case 2:
-        opcaoMenu02 = melhorCaso();
+        opcaoMenu02 = 2;
         break;
     //[3] Contagem
     case 3:
-        opcaoMenu02 = contagem();
-        break;
-    default:
-        std::cout << "[ERRO] Escolha uma opcao valida!";
+        opcaoMenu02 = 3;
         break;
     }
+
+    menu02(opcaoMenu02, elementosDaFila);
 
     // AREA DE TESTES
     for (int i = 0; i < (int) elementosDaFila.size(); i++) {
