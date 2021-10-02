@@ -91,6 +91,7 @@ void procurarMenorPosApos(std::vector<int> fila){
 void procurarHomemCalmo(std::vector<int> fila){
     int posicao { 0 };
     int menor { 999999 };
+    
     for (int i = 0; i < (int) fila.size(); i++) {
         // menor valor maior que 0
         if (fila[i] < menor && fila[i] > 0) {
