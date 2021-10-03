@@ -36,78 +36,58 @@ int menu01(){
     return opcao;
 }
 
-void existe(std::vector<int> fila){
-    int proc { 0 };
-    std::cout << "\n\nDigite o elemento procurado: ";
-    std::cin >> proc;
-
+std::string existe(std::vector<int> fila, int pc){
     int ver { 0 };
+    std::string res {};
+
     for (int i = 0; i < (int) fila.size(); i++) {
-        if (fila[i] == proc) {
-            std::cout << "\nO valor " << proc << " aparece na fila";
+        if (fila[i] == pc) {
+            res = "aparece";
             ver++;
             break;
         }
     }
 
     if (ver == 0) {
-        std::cout << "\nO valor " << proc << " nao aparece na fila";
+        res = "nao aparece";
     }
+
+    return res;
 }
 
-void contar(std::vector<int> fila){
-    int valorProcurado { 0 };
-    std::cout << "\n\nDigite o elemento a ser contado: ";
-    std::cin >> valorProcurado;
-
+int contar(std::vector<int> fila, int proc){
     int contador { 0 };
+
     for (int i = 0; i < (int) fila.size(); i++) {
-        if (fila[i] == valorProcurado)
+        if (fila[i] == proc)
             contador++;
     }
 
-    std::cout << "\n" <<valorProcurado << " aparecena fila " << contador << " vezes";
+    return contador;
 }
 
-void procurarValor(std::vector<int> fila) {
-    int valorProcurado { 0 };
-    std::cout << "\n\nDigite o valor procurado: ";
-    std::cin >> valorProcurado;
-
+int procurarValor(std::vector<int> fila,int proc) {
     int posicao {(int) fila.size() + 1};
+
     for (int i = 0; i < (int) fila.size(); i++) {
-        if (fila[i] == valorProcurado && i < posicao) 
+        if (fila[i] == proc && i < posicao) 
             posicao = i;
     }
 
-    if (posicao < ((int) fila.size() + 1)) 
-        std::cout << "\n" << valorProcurado << " aparece pela primeira vez na posicao " << posicao;
-    else
-        std::cout << "\n" << valorProcurado << " nao aparece na fila";
+    return posicao;
 }
 
-void procurarValorApos(std::vector<int> fila){
-    int valorProcurado { 0 };
-    std::cout << "\n\nDigite o valor procurado: ";
-    std::cin >> valorProcurado;
-
-    int posicaoIniciarProcura { 0 };
-    std::cout << "Posicao para iniciar a procurar: ";
-    std::cin >> posicaoIniciarProcura;
-
+int procurarValorApos(std::vector<int> fila, int proc, int initProc){
     int posicao { (int) fila.size() + 1 };
     
-    for (int i = posicaoIniciarProcura; i < (int) fila.size(); i++) {
-        if (fila[i] == valorProcurado && i < posicao) {
+    for (int i = initProc; i < (int) fila.size(); i++) {
+        if (fila[i] == proc && i < posicao) {
             posicao = i;
             break;
         }
     }
 
-    if (posicao < ((int) fila.size() + 1))
-        std::cout << "\n" << "O valor " << valorProcurado << " aparece na posicao " << posicao;
-    else
-        std::cout << "\n" << "O valor " << valorProcurado << " nao aparece na fila se iniciarmos a contagem da posicao " << posicaoIniciarProcura;
+    return posicao;
 }
 
 int main(){
@@ -120,19 +100,37 @@ int main(){
     int opcaoMenu { 0 };
     opcaoMenu = menu01();
 
-    switch (opcaoMenu) {
-    case 1:
-        existe(elementosDaFila);
-        break;
-    case 2:
-        contar(elementosDaFila);
-        break;
-    case 3:
-        procurarValor(elementosDaFila);
-        break;
-    case 4:
-        procurarValorApos(elementosDaFila);
-        break;
+    if (opcaoMenu == 1) {
+        int proc { 0 };
+        std::cout << "\n\nDigite o elemento procurado: ";
+        std::cin >> proc;
+
+        std::cout << "O valor " << proc << " " << existe(elementosDaFila, proc) << " na fila";
+    }
+    else if (opcaoMenu == 2) {
+        int valorProcurado { 0 };
+        std::cout << "\n\nDigite o elemento a ser contado: ";
+        std::cin >> valorProcurado;
+
+        std::cout << "\n" <<valorProcurado << " aparece na fila " << contar(elementosDaFila, valorProcurado) << " vezes";
+    }
+    else if (opcaoMenu == 3) {
+        int valorProcurado { 0 };
+        std::cout << "\n\nDigite o valor procurado: ";
+        std::cin >> valorProcurado;
+
+        std::cout << "\n" << valorProcurado << " aparece pela primeira vez na posicao " << procurarValor(elementosDaFila, valorProcurado);
+    }
+    else {
+        int valorProcurado { 0 };
+        std::cout << "\n\nDigite o valor procurado: ";
+        std::cin >> valorProcurado;
+
+        int posicaoIniciarProcura { 0 };
+        std::cout << "Posicao para iniciar a procurar: ";
+        std::cin >> posicaoIniciarProcura;
+
+        std::cout << "O valor " << valorProcurado << " aparece na posicao " << procurarValorApos(elementosDaFila, valorProcurado, posicaoIniciarProcura);
     }
 
     return 0;

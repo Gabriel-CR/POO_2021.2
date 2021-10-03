@@ -38,29 +38,32 @@ int menu01(){
     return opcao;
 }
 
-void procurarMenor(std::vector<int> fila){
+int procurarMenor(std::vector<int> fila){
     int menor {999999};
+
     for (int i = 0; i < (int) fila.size(); i++) {
         if (fila[i] < menor)
             menor = fila[i];
     }
 
-    std::cout << "\nO menor valor da fila e " << menor;
+    return menor;
 }
 
-void procurarMaior(std::vector<int> fila){
+int procurarMaior(std::vector<int> fila){
     int maior { 0 };
+
     for (int i = 0; i < (int) fila.size(); i++) {
         if (fila[i] > maior)
             maior = fila[i];
     }
 
-    std::cout << "\nO maior valor da fila e " << maior;
+    return maior;
 }
 
-void procurarMenorPos(std::vector<int> fila){    
+int procurarMenorPos(std::vector<int> fila){    
     int menor {999999};
     int posicao { 0 };
+
     for (int i = 0; i < (int) fila.size(); i++) {
         if (fila[i] < menor) {
             menor = fila[i];
@@ -68,10 +71,10 @@ void procurarMenorPos(std::vector<int> fila){
         }
     }
 
-    std::cout << "\nA posicao do menor valor da fila e " << posicao;
+    return posicao;
 }
 
-void procurarMenorPosApos(std::vector<int> fila){
+int procurarMenorPosApos(std::vector<int> fila){
     int valorP { 0 };
     std::cout << "\n\nDigite o valor de P: ";
     std::cin >> valorP;
@@ -85,10 +88,12 @@ void procurarMenorPosApos(std::vector<int> fila){
         }
     }
 
-    std::cout << "\nA posicao do menor valor da fila, apos " << valorP << " e " << fila[posicao + 1];
+    int resposta = fila[posicao + 1];
+
+    return resposta;
 }
 
-void procurarHomemCalmo(std::vector<int> fila){
+int procurarHomemCalmo(std::vector<int> fila){
     int posicao { 0 };
     int menor { 999999 };
     
@@ -100,7 +105,7 @@ void procurarHomemCalmo(std::vector<int> fila){
         }
     }
 
-    std::cout << "\nO homem mais calmo esta na posicao " << posicao;
+    return posicao;
 }
 
 int main(){
@@ -113,22 +118,21 @@ int main(){
     int opcaoMenu { 0 };
     opcaoMenu = menu01();
 
-    switch (opcaoMenu) {
-    case 1:
-        procurarMenor(elementosDaFila);
-        break;
-    case 2:
-        procurarMaior(elementosDaFila);
-        break;
-    case 3:
-        procurarMenorPos(elementosDaFila);
-        break;
-    case 4:
-        procurarMenorPosApos(elementosDaFila);
-        break;
-    case 5:
-        procurarHomemCalmo(elementosDaFila);
-        break;
+    if (opcaoMenu == 1) {
+        std::cout << "\nO menor valor da fila e " << procurarMenor(elementosDaFila);
+    }
+    else if (opcaoMenu == 2) {
+        std::cout << "\nO maior valor da fila e " << procurarMaior(elementosDaFila);
+    }
+    else if (opcaoMenu == 3) {
+        std::cout << "\nA posicao do menor valor da fila e " << procurarMenorPos(elementosDaFila);
+    }
+    else if (opcaoMenu == 4) {
+        int res = procurarMenorPosApos(elementosDaFila);
+        std::cout << "\nApos o valor digitado, o menor valor da fila e " << res;
+    }
+    else {
+        std::cout << "\nO homem mais calmo esta na posicao " << procurarHomemCalmo(elementosDaFila);
     }
 
     return 0;
