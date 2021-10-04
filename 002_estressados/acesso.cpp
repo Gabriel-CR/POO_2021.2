@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <ctime>
+#include <cstdlib>
 
 /*
 [5] ACESSO:
@@ -48,7 +50,14 @@ std::vector<int> inverterComCopia(const std::vector<int>& fila){
     return invertido;
 }
 
+void inverterInplace(std::vector<int>& fila){
+    for (int i = ((int) fila.size()) - 1; i >= 0; i--)
+        std::cout << fila[i] << " ";
+}
+
 int main(){
+    std::srand(std::time(0));
+    
     //RECEBENDO ELEMENTOS DA FILA DO USUÁRIO
     std::cout << "Digite as pessoas presentes na fila: ";
     std::string entrada;
@@ -69,7 +78,11 @@ int main(){
         std::cout << "]\n";
     }
     else if (opcaoMenu == 2) {
-
+        std::cout << "\nElementos da fila invertidos [ ";
+        inverterInplace(elementosDaFila);
+        std::cout << "]\n";
+    }
+    else if (opcaoMenu == 3) {
     }
 
     return 0;
