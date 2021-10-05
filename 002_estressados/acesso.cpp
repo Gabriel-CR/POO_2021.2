@@ -55,6 +55,14 @@ void inverterInplace(std::vector<int>& fila){
         std::cout << fila[i] << " ";
 }
 
+int sortear(std::vector<int>& fila){
+    int posicao = rand() % fila.size();
+
+    int numSorteado = fila[posicao];
+
+    return numSorteado;
+}
+
 int main(){
     std::srand(std::time(0));
     
@@ -83,6 +91,7 @@ int main(){
         std::cout << "]\n";
     }
     else if (opcaoMenu == 3) {
+        std::cout << "Escolhi retornar o elemento " << sortear(elementosDaFila) << '\n';
     }
 
     return 0;
