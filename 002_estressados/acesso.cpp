@@ -3,6 +3,7 @@
 #include <sstream>
 #include <ctime>
 #include <cstdlib>
+#include <string>
 
 /*
 [5] ACESSO:
