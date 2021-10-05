@@ -4,6 +4,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 
 /*
 [5] ACESSO:
@@ -41,6 +42,16 @@ int menu01(){
     return opcao;
 }
 
+std::string toString(std::vector<int>& fila){
+    std::string lista = " ";
+
+    for (int i = 0; i < (int) fila.size(); i++){
+        lista = lista + std::to_string(fila[i]) + " ";
+    }
+
+    return lista;
+}
+
 std::vector<int> inverterComCopia(const std::vector<int>& fila){
     std::vector<int> invertido;
     
@@ -64,6 +75,31 @@ int sortear(std::vector<int>& fila){
     return numSorteado;
 }
 
+void embaralhar(std::vector<int>& fila){
+    for (int i = 0; i < (int) fila.size(); i++) {
+        int randomValue = rand() % ((int) fila.size());
+
+        int aux = fila[i];
+        fila[i] = fila[randomValue];
+        fila[randomValue] = aux;
+    }
+}
+
+void ordenar(std::vector<int>& fila){
+    for (int i = 0; i < (int) fila.size(); i++) {
+        int menor = i;
+
+        for (int j = i + 1; j < (int) fila.size(); j++) {
+            if (fila[j] < fila[menor])
+                menor = j;
+        }
+
+        int aux = fila[i];
+        fila[i] = fila[menor];
+        fila[menor] = aux;
+    }
+}
+
 int main(){
     std::srand(std::time(0));
     
@@ -79,20 +115,23 @@ int main(){
     if (opcaoMenu == 1) {
         std::vector<int> elementosInvertidos { inverterComCopia(elementosDaFila) };
 
-        std::cout << "\nElementos da fila invertidos [ ";
-
-        for (int i = 0; i < (int) elementosInvertidos.size(); i++)
-            std::cout << elementosInvertidos[i] << " ";
-
-        std::cout << "]\n";
+        std::cout << "\nElementos da fila invertidos [" << toString(elementosInvertidos) << "]";
     }
     else if (opcaoMenu == 2) {
-        std::cout << "\nElementos da fila invertidos [ ";
+        std::cout << "\nElementos da fila invertidos [";
         inverterInplace(elementosDaFila);
         std::cout << "]\n";
     }
     else if (opcaoMenu == 3) {
         std::cout << "Escolhi retornar o elemento " << sortear(elementosDaFila) << '\n';
+    }
+    else if (opcaoMenu == 4) {
+        embaralhar(elementosDaFila);
+        std::cout << "\nElementos da fila embaralhados [" << toString(elementosDaFila) << "]";
+    }
+    else {
+        ordenar(elementosDaFila);
+        std::cout << "Elementos ordenados [" << toString(elementosDaFila) << "]";
     }
 
     return 0;
