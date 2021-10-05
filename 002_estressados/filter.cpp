@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <string>
 
 /*
 [4] FILTER:
@@ -34,6 +35,16 @@ int menu01(){
     std::cin >> opcao;
 
     return opcao;
+}
+
+std::string toString(std::vector<int>& fila){
+    std::string lista = " ";
+
+    for (int i = 0; i < (int) fila.size(); i++){
+        lista = lista + std::to_string(fila[i]) + " ";
+    }
+
+    return lista;
 }
 
 std::vector<int> clonar(const std::vector<int>& fila){
@@ -91,42 +102,22 @@ int main(){
     if (opcaoMenu == 1) {
         std::vector<int> clone = clonar(elementosDaFila);
 
-        std::cout << "\nElementos do vetor clonado [ ";
-
-        for (int i = 0; i < (int) clone.size(); i++)
-            std::cout << clone[i] << " ";
-
-        std::cout << "]\n";
+        std::cout << "\nElementos do vetor clonado [" << toString(clone) << "]";
     }
     else if (opcaoMenu == 2) {
         std::vector<int> homens = pegarHomens(elementosDaFila);
 
-        std::cout << "\nHomens na fila [ ";
-
-        for (int i = 0; i < (int) homens.size(); i++)
-            std::cout << homens[i] << " ";
-
-        std::cout << "]\n";
+        std::cout << "\nHomens na fila [" << toString(homens) << "]";
     }
     else if (opcaoMenu == 3) {
         std::vector<int> calmos = pegarCalmos(elementosDaFila);
 
-        std::cout << "\nStress menores da fila [ ";
-
-        for (int i = 0; i < (int) calmos.size(); i++)
-            std::cout << calmos[i] << " ";
-
-        std::cout << "]\n";
+        std::cout << "\nStress menores da fila [" << toString(calmos) << "]";
     }
     else {
         std::vector<int> mulheresCalmas = pegarMulheresCalmas(elementosDaFila);
 
-        std::cout << "\nMulheres com menores stress da fila [ ";
-
-        for (int i = 0; i < (int) mulheresCalmas.size(); i++)
-            std::cout << mulheresCalmas[i] << " ";
-
-        std::cout << "]\n";
+        std::cout << "\nMulheres com menores stress da fila [" << toString(mulheresCalmas) << "]";
     }
 
     return 0;
