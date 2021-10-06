@@ -46,17 +46,41 @@ std::string toString(std::vector<int>& fila){
 
 std::vector<int> exclusivos(const std::vector<int>& fila){
     std::vector<int> unicos;
+    int j { 0 };
+    int n { 0 };
 
     for (int i = 0; i < (int) fila.size(); i++) {
-        for (int j = 0; j < i; j++) {
-            if (fila[i] == fila[j])
+        for (j = 0; j < n; j++) {
+            if (fila[i] == unicos[j])
                 break;
-            else
-                unicos.push_back(fila[j]);
+        }
+
+        if (j == n) {
+            unicos.push_back(fila[i]);
+            n++;
         }
     }
     
     return unicos;
+}
+
+std::vector<int> diferentes(const std::vector<int>& fila){
+    std::vector<int> stress;
+    
+    for (int i = 0; i < (int) fila.size(); i++) {
+        if (fila[i] < 0)
+            stress.push_back(fila[i] * (-1));
+        else
+            stress.push_back(fila[i]);
+    }
+
+    std::vector<int> niveis = exclusivos(stress);
+    
+    return niveis;
+}
+
+std::vector<int> abandonados(const std::vector<int>& fila){
+    
 }
 
 int main(){
@@ -70,8 +94,16 @@ int main(){
     opcaoMenu = menu01();
 
     if (opcaoMenu == 1) {
-        std::vector<int> repetidoRemove { exclusivos(elementosDaFila) };
-        std::cout << "Elementos na fila, sem repeticao [" << toString(repetidoRemove) << "]";
+        std::vector<int> removeRepetidos { exclusivos(elementosDaFila) };
+        std::cout << "Elementos na fila, sem repeticao [" << toString(removeRepetidos) << "]";
+    }
+    else if (opcaoMenu == 2) {
+        std::vector<int> stress { diferentes(elementosDaFila) };
+        std::cout << "Niveis de stress na fila [" << toString(stress) << "]";
+    }
+    else {
+        std::vector<int> unicos { abandonados(elementosDaFila) };
+        std::cout << "Unicos na fila [" << toString(unicos) << "]";
     }
     
     return 0;
