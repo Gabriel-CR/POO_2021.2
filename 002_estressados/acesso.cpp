@@ -114,7 +114,6 @@ int main(){
 
     if (opcaoMenu == 1) {
         std::vector<int> elementosInvertidos { inverterComCopia(elementosDaFila) };
-
         std::cout << "\nElementos da fila invertidos [" << toString(elementosInvertidos) << "]";
     }
     else if (opcaoMenu == 2) {
