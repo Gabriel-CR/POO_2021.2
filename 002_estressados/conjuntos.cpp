@@ -81,8 +81,10 @@ std::vector<int> diferentes(const std::vector<int>& fila){
 
 std::vector<int> abandonados(const std::vector<int>& fila){
     std::vector<int> lista;
+    // CRIAÇÃO DE VETOR SEM REPETIÇÃO DE NÚMEROS COM BASE NA FILA
     std::vector<int> unicos = exclusivos(fila);
     
+    // CRIANDO UMA LISTA COM O NÚMERO E QUANTAS VEZES ELE APARECE NA FILA "lista[numero, ocorrencia na fila]"
     for (int i = 0; i < (int) unicos.size(); i++) {
         lista.push_back(unicos[i]);
 
@@ -98,6 +100,7 @@ std::vector<int> abandonados(const std::vector<int>& fila){
 
     std::vector<int> resultado;
 
+    // POPULANDO O VETOR RESULTADO, COLOCANDO O numero PRESENTE NA LISTA COM A (ocorrenci - 1)
     for (int i = 0; i < (int) lista.size(); i += 2) {
         for (int j = 0; j < lista[i + 1] - 1; j++)
             resultado.push_back(lista[i]);
