@@ -80,7 +80,30 @@ std::vector<int> diferentes(const std::vector<int>& fila){
 }
 
 std::vector<int> abandonados(const std::vector<int>& fila){
+    std::vector<int> lista;
+    std::vector<int> unicos = exclusivos(fila);
     
+    for (int i = 0; i < (int) unicos.size(); i++) {
+        lista.push_back(unicos[i]);
+
+        int contador { 0 };
+
+        for (int j = 0; j < (int) fila.size(); j++) {
+            if (unicos[i] == fila[j])
+                contador++;
+        }
+
+        lista.push_back(contador);
+    }
+
+    std::vector<int> resultado;
+
+    for (int i = 0; i < (int) lista.size(); i += 2) {
+        for (int j = 0; j < lista[i + 1] - 1; j++)
+            resultado.push_back(lista[i]);
+    }
+
+    return resultado;
 }
 
 int main(){
