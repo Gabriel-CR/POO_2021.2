@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${default}",
+                "${workspaceFolder}/**" ,
                 "C:\\SFML-2.5.1\\include"
             ],
             "defines": [
@@ -11,6 +11,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
+            "compilerPath": "C:\\mingw32\\bin\\gcc.exe",
             "cStandard": "gnu11",
             "intelliSenseMode": "windows-gcc-x86"
         }
