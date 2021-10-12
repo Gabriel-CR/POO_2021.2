@@ -79,6 +79,27 @@ int maisOcorrencias(const std::vector<int>& fila){
     return stressComum;
 }
 
+int *maisRecorrentes(const std::vector<int>& fila, int arr[]){
+    int maior { 0 };
+    
+    for (int i = { 0 }; i < (int) fila.size(); i++) {
+        int cont { 0 };
+
+        for (int j = { 0 }; j < (int) fila.size(); j++) {
+            if (abs(fila[i]) == abs(fila[j]))
+                cont++;
+        }
+
+        if (cont > maior) {
+            maior = cont;
+            arr[0] = abs(fila[i]);
+            arr[1] = cont;
+        }
+    }
+    
+    return arr;
+}
+
 int main(){
     //RECEBENDO ELEMENTOS DA FILA DO USUÁRIO
     std::cout << "Digite as pessoas presentes na fila: ";
@@ -95,6 +116,11 @@ int main(){
     }
     else if (opcaoMenu == 2) {
         std::cout << "\nStress comum " << maisOcorrencias(elementosDaFila) << '\n';
+    }
+    else {
+        int recorrentes[2];
+        maisRecorrentes(elementosDaFila, recorrentes);
+        std::cout << "\nNivel de stress mais recorente [" << recorrentes[0] << " " << recorrentes[1] << "]\n";
     }
     
     return 0;
