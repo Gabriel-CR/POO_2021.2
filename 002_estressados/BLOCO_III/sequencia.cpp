@@ -34,6 +34,15 @@ int menu01(){
     return opcao;
 }
 
+std::string toString(std::vector<int>& fila){
+    std::string lista = " ";
+
+    for (int i = 0; i < (int) fila.size(); i++)
+        lista = lista + std::to_string(fila[i]) + " ";
+
+    return lista;
+}
+
 int quantosTimes(std::vector<int> fila){
     int times { 0 };
     
@@ -61,6 +70,43 @@ int quantosTimes(std::vector<int> fila){
     return times;
 }
 
+std::vector<int> maiorTime(const std::vector<int> fila){
+    std::vector<int> time;
+    int maior { 0 };
+    int pos { 0 };
+    int cont { 0 };
+
+    for (int i { 0 }; i < (int) fila.size(); i++) {
+        int cont = 0;
+
+        while (fila[i] > 0) {
+            i++;
+            cont++;
+        }
+        if (cont > maior) {
+            maior = cont;
+            pos = cont - i;
+        }
+
+        cont = 0;
+
+        while (fila[i] < 0) {
+            i++;
+            cont++;
+        }
+        if (cont > maior) {
+            maior = cont;
+            pos = cont - i;
+        }
+    }
+
+    for (int i = pos; i < cont; i++) {
+        time.push_back(fila[i]);
+    }
+
+    return time;
+}
+
 int main(){
     //RECEBENDO ELEMENTOS DA FILA DO USUÁRIO
     std::cout << "Digite as pessoas presentes na fila: ";
@@ -73,6 +119,10 @@ int main(){
 
     if (opcaoMenu == 1) {
         std::cout << "\nExistem " << quantosTimes(elementosDaFila) << " times na fila.\n";
+    }
+    else if (opcaoMenu == 2) {
+        std::vector<int> maior;
+        std::cout << "\nO maior time na fila e o [" << toString(maior) << "] com " << (int) maior.size() << " elementos\n";
     }
     
     return 0;
