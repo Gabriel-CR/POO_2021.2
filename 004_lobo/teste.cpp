@@ -77,9 +77,9 @@ sf::Texture loadTexture(std::string path) {
 }
 
 int main() {
-    sf::Texture wolf_text { loadTexture("images/lobol.png") };
-    sf::Texture rabbit_text { loadTexture("images/coelho.png") };
-    sf::Texture grass_text { loadTexture("images/grama.jpg") };
+    sf::Texture wolf_text { loadTexture("images/musk.png") };
+    sf::Texture rabbit_text { loadTexture("images/bezos.png") };
+    sf::Texture grass_text { loadTexture("images/fundo.png") };
 
     const int STEP {100};
 
