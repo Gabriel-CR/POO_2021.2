@@ -45,26 +45,24 @@ std::string toString(std::vector<int>& fila){
 
 int quantosTimes(std::vector<int> fila){
     int times { 0 };
+    int cont { 0 };
     
     for (int i { 0 }; i < (int) fila.size(); i++) {
-        int cont { 0 };
+        cont = 0;
 
-        if (fila[i > 0]) {
-            while (fila[i] > 0) {
-                i++;
-                cont ++;
-            }
-            if (cont > 1)
-                times++;
+        while (fila[i] > 0) {
+            i++;
+            cont++;
         }
-        else {
-            while (fila[i] < 0) {
-                i++;
-                cont ++;
-            }
-            if (cont > 1)
-                times++;
+        if (cont > 1)
+            times++;
+        
+        while (fila[i] < 0) {
+            i++;
+            cont++;
         }
+        if (cont > 1)
+            times++;          
     }
 
     return times;
@@ -77,7 +75,7 @@ std::vector<int> maiorTime(const std::vector<int> fila){
     int cont { 0 };
 
     for (int i { 0 }; i < (int) fila.size(); i++) {
-        int cont = 0;
+        cont = 0;
 
         while (fila[i] > 0) {
             i++;
@@ -85,7 +83,7 @@ std::vector<int> maiorTime(const std::vector<int> fila){
         }
         if (cont > maior) {
             maior = cont;
-            pos = cont - i;
+            pos = i - cont;
         }
 
         cont = 0;
@@ -96,15 +94,43 @@ std::vector<int> maiorTime(const std::vector<int> fila){
         }
         if (cont > maior) {
             maior = cont;
-            pos = cont - i;
+            pos = i - cont;
+        }
+            
+    }
+
+    //std::cout << "\npos: " << pos << "\ntam: " << maior << '\n';
+
+    for (int j = pos; j < (maior + pos); j++)
+        time.push_back(fila[j]);
+
+    return time;
+}
+
+int sozinhos(const std::vector<int> fila){
+    int so { 0 };
+    int tam = (int) fila.size();
+
+    for (int i = 0; i < tam; i++) {
+        if (i == 0) {
+            if ((fila[i] > 0 && fila[i + 1] < 0) || (fila[i] < 0 && fila[i + 1] > 0))
+                so++;
+        }
+        else if (fila[i] > 0) {
+            if (fila[i - 1] < 0 && fila[i + 1] < 0)
+                so++;
+        }
+        else if (fila[i] < 0) {
+            if (fila[i - 1] > 0 && fila[i + 1] > 0)
+                so++;
+        }
+        else {
+            if ((fila[i - 1] > 0 && fila[i] < 0) || (fila[i - 1] < 0 && fila[i] > 0))
+                so++;
         }
     }
 
-    for (int i = pos; i < cont; i++) {
-        time.push_back(fila[i]);
-    }
-
-    return time;
+    return so;
 }
 
 int main(){
@@ -121,8 +147,11 @@ int main(){
         std::cout << "\nExistem " << quantosTimes(elementosDaFila) << " times na fila.\n";
     }
     else if (opcaoMenu == 2) {
-        std::vector<int> maior;
+        std::vector<int> maior { maiorTime(elementosDaFila) };
         std::cout << "\nO maior time na fila e o [" << toString(maior) << "] com " << (int) maior.size() << " elementos\n";
+    }
+    else {
+        std::cout << "\nExistem " << sozinhos(elementosDaFila) << " pessoas sem time na fila.\n";
     }
     
     return 0;
