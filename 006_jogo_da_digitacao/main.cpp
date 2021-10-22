@@ -1,8 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
-// g++ -IC:\SFML-2.5.1\include -c main.cpp -o main.o
-// g++ -LC:\SFML-2.5.1\lib .\main.o -o app.exe -lmingw32 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-main -mwindows
+#include <vector>
+#include <functional>
 
 struct PINCEL { // construindo a fonte
     sf::Font font;
@@ -51,15 +50,100 @@ struct BUBBLE {
 };
 
 struct BOARD {
-    
-};
+    sf::RenderWindow& window;
+    std::vector<BUBBLE> bubbles;
+    PINCEL pencil;
+    int hits { 0 };
+    int misses { 0 };
 
+    BOARD(sf::RenderWindow& window) : window{window}, pencil{window} {
+        bubbles.push_back(BUBBLE(100, 100, 'A', 1));
+        bubbles.push_back(BUBBLE(200, 100, 'B', 2));
+        bubbles.push_back(BUBBLE(300, 100, 'C', 3));
+    }
+
+    void update() {
+        if (this->checkNewBubble())
+            this->addNewBubble();
+
+        for (BUBBLE& bubble : bubbles)
+            bubble.update();
+
+        this->markOutsideBubbles();
+        this->removeDeadBubbles();
+    }
+
+    void removeDeadBubbles(){
+        std::vector<BUBBLE> vivas;
+
+        for (BUBBLE& bubble : bubbles) {
+            if (bubble.alive)
+                vivas.push_back(bubble);
+        }
+
+        this->bubbles = vivas;
+    }
+
+    void markOutsideBubbles() {
+        for (BUBBLE& bubble : bubbles) {
+            if (bubble.y + 2 * BUBBLE::radius > (int) this-> window.getSize().y) {
+                if (bubble.alive) {
+                    bubble.alive = false;
+                    this->misses++;
+                }
+            }
+        }
+    }
+
+    void markByHit(char letter){
+        for (BUBBLE& bubble : bubbles) {
+            if (bubble.letter == letter) {
+                bubble.alive = false;
+                this->hits++;
+                break;
+            }
+        }
+    }
+
+    bool checkNewBubble(){
+        static const int newBubblesTimeOut { 30 };
+        static int newBubblesTimer { 0 };
+
+        newBubblesTimer--;
+        if (newBubblesTimer <= 0) {
+            newBubblesTimer = newBubblesTimeOut;
+            return true;
+        }
+        return false;
+    }
+
+    void addNewBubble(){
+        int x = rand() % ((int) this->window.getSize().x - 2 * BUBBLE::radius);
+        int y = - 2 * BUBBLE::radius;
+        int speed = rand() % 5 + 1;
+        char letter = rand() % 26 + 'A';
+        bubbles.push_back(BUBBLE(x, y, letter, speed));
+    }
+
+    void draw() {
+        pencil.write("Hits: " + std::to_string(this->hits) + "  Misses: " + std::to_string(this->misses), 10, 10, 20, sf::Color::White);
+        pencil.write("Size: " + std::to_string(this->bubbles.size()), 10, 30, 20, sf::Color::White);
+
+        for (BUBBLE& bubble : bubbles)
+            bubble.draw(window);
+    }
+};
 
 struct GAME {
     sf::RenderWindow window;
+    BOARD board;
+    std::function<void()> onUpdate;
 
-    GAME() : window(sf::VideoMode(800, 600), "Bubbles") { // criando janela
-        window.setFramerateLimit(60);
+    GAME() : window(sf::VideoMode(800, 600), "Bubbles"), board(window) { // criando janela
+        this->onUpdate = [&]() {
+            this->gamePlay();
+        };
+        window.setFramerateLimit(30);
     }
 
     void processEvents() {
@@ -68,29 +152,44 @@ struct GAME {
             if (event.type == sf::Event::Closed) { //fecha a janela
                 window.close();
             }
+            else if (event.type == sf::Event::TextEntered) {
+                char code = static_cast<char>(event.text.unicode);
+                code = toupper(code);
+                board.markByHit(code);
+            }
         }
     }
 
-    void draw() {
+    void gamePlay() {
+        board.update();
         window.clear(sf::Color::Black);
-        static BUBBLE bubble(200, 100, 'B', 2);
-        bubble.update();
-        bubble.draw(window);
+        board.draw();
+        window.display();
+
+        if (board.misses > 10) {
+            this->onUpdate = [&]() {
+                this->gameOver();
+            };
+        }
+    }
+
+    void gameOver(){
+        static PINCEL pincel(window);
+        window.clear(sf::Color::Red);
+        pincel.write("Game Over", 400, 300, 50, sf::Color::White);
         window.display();
     }
 
     void mainLoop() { // ordem de acontecimentos do jogo
         while (window.isOpen()) {
             processEvents();
-            draw();
+            onUpdate();
         }        
     }
 };
 
-
 int main(){
     GAME game;
     game.mainLoop();
-
     return 0;
 }
