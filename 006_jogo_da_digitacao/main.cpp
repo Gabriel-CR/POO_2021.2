@@ -45,7 +45,7 @@ struct BUBBLE {
         window.draw(circle);
 
         static PINCEL pencil(window);
-        pencil.write(std::string(1, letter), x + 0.2 * BUBBLE::radius, y, BUBBLE::radius * 1.5, sf::Color::Blue);
+        pencil.write(std::string(1, letter), x + 0.2 * BUBBLE::radius, y, BUBBLE::radius * 1.5, sf::Color::Black);
     }
 };
 
@@ -139,7 +139,7 @@ struct GAME {
     BOARD board;
     std::function<void()> onUpdate;
 
-    GAME() : window(sf::VideoMode(800, 600), "Bubbles"), board(window) { // criando janela
+    GAME() : window(sf::VideoMode(800, 600), "Jogo Digitacao"), board(window) { // criando janela
         this->onUpdate = [&]() {
             this->gamePlay();
         };
@@ -162,7 +162,7 @@ struct GAME {
 
     void gamePlay() {
         board.update();
-        window.clear(sf::Color::Black);
+        window.clear(sf::Color::Black); // aqui
         board.draw();
         window.display();
 
@@ -175,8 +175,9 @@ struct GAME {
 
     void gameOver(){
         static PINCEL pincel(window);
-        window.clear(sf::Color::Red);
-        pincel.write("Game Over", 400, 300, 50, sf::Color::White);
+        sf::Color cor (42, 42, 42);
+        window.clear(cor);
+        pincel.write("Game Over", 240, 270, 50, sf::Color::White);
         window.display();
     }
 
