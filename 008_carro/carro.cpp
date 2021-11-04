@@ -2,18 +2,44 @@
 #include <vector>
 
 class CARRO {
-    int gas;
-    int maxGas;
-    int km;
-    std::vector<int> passageiro;
-    int passMax;
+    int gas { 0 };
+    int maxGas { 100 };
+    int km { 0 };
+    int passageiro { 0 };
+    int passMax { 2 };
 public:
-    CARRO(int gas, std::vector<int> passageiro, int km) : gas{0}, passageiro{}, {
+    int getPassageiro() {
+        return this->passageiro;
     }
+    int getGasolina() {
+        return this->gas;
+    }
+    int getKm() {
+        return this->km;
+    }
+
+    void embarcar(){
+        if (passageiro < passMax)
+            this->passageiro++;
+        else
+            std::cout << "O carro esta lotado" << std::endl;
+    }
+    void desembarcar(){
+        if (passageiro > 0)
+            this->passageiro--;
+        else
+            std::cout << "Nao ha passageiro para desembarcar" << std::endl;
+    }
+
+    
 };
 
 int main(){
-    
-    
+    CARRO carro;
+
+    carro.embarcar();
+
+    std::cout << carro.getPassageiro() << std::endl;
+
     return 0;
 }
