@@ -29,6 +29,8 @@ class PULA_PULA {
         void setCaixa() { this->caixa += 1; }
         int getCaixa() { return this->caixa; }
 
+        void setFila(CRIANCA c) { this->fila.push_back(c); }
+
         void removerDoPulaPula() {
             aux = brincando;
             brincando = fila[(int)fila.size()];
