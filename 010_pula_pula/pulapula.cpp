@@ -42,15 +42,16 @@ class PULA_PULA{
 
         void show(){
             std::cout << "=> ";
-            for (int i = 0; i < (int)fila.size(); i++)
+            for (int i = ((int) fila.size()) - 1; i >= 0; i--)
                 std::cout << fila[i];
             std::cout << "=> ";
             if (brincando == nullptr) { std::cout << "[ ]" << std::endl; }
-            else { std::cout << "[ " << this->brincando << std::endl; }
+            else { std::cout << "[ " << *this->brincando << "]" << std::endl; }
         }
 
-        void in(){
-            
+        void in(){ // ERRO AQUI
+            fila.push_back(*brincando);
+            brincando = new CRIANCA(fila[0]);
         }
 };
 
