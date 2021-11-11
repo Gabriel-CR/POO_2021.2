@@ -1,6 +1,7 @@
 #include <iostream>
-#include <vector>
+#include <list>
 #include <sstream>
+#include <memory>
 
 class CRIANCA{
     int idade;
@@ -13,11 +14,11 @@ class CRIANCA{
         // ADICIONA OS DADOS DA CRIANCA;
         //void setIdade(int idade){ this->idade = idade; }
         //void setNome(std::string nome){ this->nome = nome; }
-        void setSaldo(int saldo){ this->saldo = saldo; }
+        void setSaldo(){ this->saldo += 1; }
 
         // RETORNA OS DADOS DA CRIANCA
         //int getIdade(){ return this->idade; }
-        //std::string getNome(){ return this->nome; }
+        std::string getNome(){ return this->nome; }
         int getSaldo(){ return this->saldo; }
 
         friend std::ostream& operator<<(std::ostream& os, const CRIANCA& c) {
@@ -27,32 +28,45 @@ class CRIANCA{
 };
 
 class PULA_PULA{
-    CRIANCA* brincando;
-    std::vector<CRIANCA> fila;
-    int caixa {};
+    std::shared_ptr<CRIANCA> brincando;
+    std::list<std::shared_ptr<CRIANCA>> fila;
+    std::list<std::shared_ptr<CRIANCA>>::iterator it;
+    std::shared_ptr<int> caixa;
+    //int caixa {};
     int max {};
 
     public:
-        PULA_PULA(CRIANCA* brincando = nullptr) : brincando{brincando} {};
+        PULA_PULA(std::shared_ptr<CRIANCA> brincando = nullptr) : brincando{brincando} {};
 
-        void arrive(std::string nome, int idade){
-            CRIANCA aux(nome, idade);
-            fila.push_back(aux);
+        void arrive(const std::shared_ptr<CRIANCA>& c){
+            this->fila.push_front(c);
         }
 
         void show(){
             std::cout << "=> ";
-            for (int i = ((int) fila.size()) - 1; i >= 0; i--)
-                std::cout << fila[i];
+            for (it = this->fila.begin(); it != this->fila.end(); it++)
+                std::cout << **it;
             std::cout << "=> ";
             if (brincando == nullptr) { std::cout << "[ ]" << std::endl; }
             else { std::cout << "[ " << *this->brincando << "]" << std::endl; }
         }
 
-        void in(){ // ERRO AQUI
-            fila.push_back(*brincando);
-            brincando = new CRIANCA(fila[0]);
+        void in(){
+            if (brincando != nullptr){
+                this->caixa += 1;
+                this->brincando->setSaldo();
+                this->fila.push_front(brincando);
+            }
+            this->brincando = fila.back();
+            this->fila.pop_back();
         }
+        
+        void caixa(){ std::cout << "R$ " << this->caixa << std::endl; }
+
+        /*void saldo(std::string nome){
+            for (it = this->fila.begin(); it != this->fila.end(); it++)
+                if (*it.getNome() == nome)
+        }*/
 };
 
 int main(){
@@ -73,7 +87,7 @@ int main(){
             std::string nome {};
             int idade {};
             ss >> nome >> idade;
-            sistema.arrive(nome, idade);
+            sistema.arrive(std::make_shared<CRIANCA>(nome, idade));
         }
         else if (cmd == "show") {
             sistema.show();
@@ -81,6 +95,14 @@ int main(){
         else if (cmd == "in") {
             sistema.in();
         }
+        else if (cmd == "caixa") {
+            sistema.caixa();
+        }
+        /*else if (cmd == "saldo") {
+            std::string nome {};
+            ss >> nome;
+            sistema.saldo(nome);
+        }*/
     }
 
     return 0;
