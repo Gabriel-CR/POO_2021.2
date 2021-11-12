@@ -4,8 +4,8 @@
 #include <memory>
 
 class CRIANCA{
-    int idade;
-    std::string nome;
+    int idade {};
+    std::string nome {};
     int saldo {};
 
     public:
@@ -62,8 +62,25 @@ class PULA_PULA{
         
         int getCaixa(){ return this->caixa; }
 
-        void saldo(std::string nome){
-            //std::find(fila.begin(), fila.end(), nome);
+        int saldo(std::string nome){
+            for (auto& it : fila) {
+                if (it->getNome() == nome){
+                    return it->getSaldo();
+                }
+            }
+        }
+
+        void papaiChegou(std::string nome){
+            if (brincando->getNome() == nome){
+                brincando = nullptr;
+            }
+            else {
+                for (auto& it : fila) {
+                    if (it->getNome() == nome){
+                        fila.remove(it);
+                    }
+                }
+            }
         }
 };
 
@@ -93,11 +110,6 @@ int main(){
         else if (cmd == "in") {
             sistema.in();
         }
-        else if (cmd == "saldo") {
-            std::string nome {};
-            ss >> nome;
-            sistema.saldo(nome);
-        }
         else if (cmd == "caixa") {
             std::cout << "caixa: R$" << sistema.getCaixa() << std::endl;
         }
@@ -105,6 +117,16 @@ int main(){
             int max {};
             ss >> max;
             sistema.setMax(max);
+        }
+        else if (cmd == "saldo") {
+            std::string nome {};
+            ss >> nome;
+            std::cout << "saldo: R$" << sistema.saldo(nome) << std::endl;
+        }
+        else if (cmd == "papaichegou") {
+            std::string nome {};
+            ss >> nome;
+            sistema.papaiChegou(nome);
         }
         else {
             std::cout << "fail: comando invalido" << std::endl;
