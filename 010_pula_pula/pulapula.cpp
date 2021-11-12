@@ -34,7 +34,12 @@ class PULA_PULA{
     public:
         PULA_PULA(std::shared_ptr<CRIANCA> brincando = nullptr) : brincando{brincando} {};
 
-        void arrive(const std::shared_ptr<CRIANCA>& c){ this->fila.push_front(c); }
+        void setMax(int max){ this->max = max; }
+
+        void arrive(const std::shared_ptr<CRIANCA>& c){
+            if (fila.size() < max) { this->fila.push_front(c); }
+            else { std::cout << "fail: fila lotada" << std::endl; }
+        }
 
         void show(){
             std::cout << "=> ";
@@ -47,18 +52,18 @@ class PULA_PULA{
 
         void in(){
             if (brincando != nullptr){
-                this->caixa += 1;
                 this->brincando->setSaldo();
                 this->fila.push_front(brincando);
             }
             this->brincando = fila.back();
             this->fila.pop_back();
+            this->caixa += 1;
         }
         
-        int caixa(){ return this->caixa; }
+        int getCaixa(){ return this->caixa; }
 
         void saldo(std::string nome){
-            
+            //std::find(fila.begin(), fila.end(), nome);
         }
 };
 
@@ -93,9 +98,17 @@ int main(){
             ss >> nome;
             sistema.saldo(nome);
         }
-        /*else if (cmd == "caixa") {
-            sistema.caixa();
-        }*/
+        else if (cmd == "caixa") {
+            std::cout << "caixa: R$" << sistema.getCaixa() << std::endl;
+        }
+        else if (cmd == "max") {
+            int max {};
+            ss >> max;
+            sistema.setMax(max);
+        }
+        else {
+            std::cout << "fail: comando invalido" << std::endl;
+        }
     }
 
     return 0;
