@@ -12,12 +12,9 @@ class CRIANCA{
         CRIANCA(std::string nome = "", int idade = 0) : nome{nome}, idade{idade} {};
         
         // ADICIONA OS DADOS DA CRIANCA;
-        //void setIdade(int idade){ this->idade = idade; }
-        //void setNome(std::string nome){ this->nome = nome; }
         void setSaldo(){ this->saldo += 1; }
 
         // RETORNA OS DADOS DA CRIANCA
-        //int getIdade(){ return this->idade; }
         std::string getNome(){ return this->nome; }
         int getSaldo(){ return this->saldo; }
 
@@ -31,16 +28,14 @@ class PULA_PULA{
     std::shared_ptr<CRIANCA> brincando;
     std::list<std::shared_ptr<CRIANCA>> fila;
     std::list<std::shared_ptr<CRIANCA>>::iterator it;
-    std::shared_ptr<int> caixa;
-    //int caixa {};
+    //std::shared_ptr<int> caixa;
+    int caixa {};
     int max {};
 
     public:
         PULA_PULA(std::shared_ptr<CRIANCA> brincando = nullptr) : brincando{brincando} {};
 
-        void arrive(const std::shared_ptr<CRIANCA>& c){
-            this->fila.push_front(c);
-        }
+        void arrive(const std::shared_ptr<CRIANCA>& c){ this->fila.push_front(c); }
 
         void show(){
             std::cout << "=> ";
@@ -61,12 +56,11 @@ class PULA_PULA{
             this->fila.pop_back();
         }
         
-        void caixa(){ std::cout << "R$ " << this->caixa << std::endl; }
+        int caixa(){ return this->caixa; }
 
-        /*void saldo(std::string nome){
-            for (it = this->fila.begin(); it != this->fila.end(); it++)
-                if (*it.getNome() == nome)
-        }*/
+        void saldo(std::string nome){
+            
+        }
 };
 
 int main(){
@@ -95,13 +89,13 @@ int main(){
         else if (cmd == "in") {
             sistema.in();
         }
-        else if (cmd == "caixa") {
-            sistema.caixa();
-        }
-        /*else if (cmd == "saldo") {
+        else if (cmd == "saldo") {
             std::string nome {};
             ss >> nome;
             sistema.saldo(nome);
+        }
+        /*else if (cmd == "caixa") {
+            sistema.caixa();
         }*/
     }
 
