@@ -28,7 +28,6 @@ class PULA_PULA{
     std::shared_ptr<CRIANCA> brincando;
     std::list<std::shared_ptr<CRIANCA>> fila;
     std::list<std::shared_ptr<CRIANCA>>::iterator it;
-    //std::shared_ptr<int> caixa;
     int caixa {};
     int max {};
 
