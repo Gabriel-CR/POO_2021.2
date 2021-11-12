@@ -16,37 +16,72 @@ public:
     void setTelefone(int fone){ this->telefone = fone; }
     void setNome(std::string nome){ this->nome = nome; }
 
-    friend std::ostream& operator<<(std::ostream& os, const CLIENTE& c){
-        os << c.nome << ":" << c.telefone << " ";
+    std::string toString(){
+        std::string os {nome + ":" + std::to_string(telefone) + " "};
         return os;
     }
 };
 
 class SALA{
-    std::shared_ptr<std::vector<CLIENTE>> cadeiras;
+    std::vector<std::shared_ptr<CLIENTE>> cadeiras;
     int maxCadeiras {};
 
 public:
     SALA(int cadeiras = 0) : maxCadeiras{cadeiras} {}
 
-    void init(int maxCadeiras) { this->maxCadeiras = maxCadeiras; }
+    void init(int maxCadeiras) {
+        this->maxCadeiras = maxCadeiras;
+        for (int i = 0; i < maxCadeiras; i++)
+            cadeiras.push_back(nullptr);
+    }
 
-    void show(){
-        if (cadeiras == nullptr) {
-            std::cout << "[ ";
-            for (int i = 0; i < maxCadeiras; i++) {
-                std::cout << "- ";
+    std::string show(){
+        std::string os {"[ "};
+        for (int i = 0; i < this->maxCadeiras; i++) {
+            if (this->cadeiras[i] != nullptr) {
+                os += cadeiras[i]->toString();
             }
-            std::cout << "]" << std::endl;
+            else {
+                os += "- ";
+            }
         }
-        else {
-            std::cout << "[ ";
-            std:: cout << "]" << std::endl;
+        os += "]";
+        return os;
+    }
+
+    bool presenteNaSala(std::string nome){
+        for (int i = 0; i < this->maxCadeiras; i++) {
+            if (cadeiras[i]->getNome() == nome)
+                return true;
         }
+        return false;
     }
 
     void reservar(const std::shared_ptr<CLIENTE>& c, int cadeira){
-        this->cadeiras[cadeira] = c;
+        if (cadeiras[cadeira] == nullptr) {
+            if (presenteNaSala(c->getNome()) == false) {
+                this->cadeiras[cadeira] = c;
+            }
+            else {
+                std::cout << "fail: cliente ja esta na sala" << std::endl;
+            }
+        }
+        else {
+            std::cout << "fail: cadeira ocupada" << std::endl;
+        }
+    }
+
+    void cancelar(std::string nome){
+        bool ver = false;
+        for (int i = 0; i < maxCadeiras; i++) {
+            if (cadeiras[i]->getNome() == nome) {
+                cadeiras[i] = nullptr;
+                ver = true;
+            }
+        }
+        if (ver == false) {
+            std::cout << "fail: cliente nao esta na sala" << std::endl;
+        }
     }
 };
 
@@ -70,15 +105,22 @@ int main(){
             sistema.init(tamCadeiras);
         }
         else if (cmd == "show") {
-            sistema.show();
+            std::cout << sistema.show() << std::endl;
         }
-        else if (cmd == "reservar") {
+        else if (cmd == "reservar") { // ERRO AQUI
             std::string nome {};
             int fone {};
             int cadeira {};
             ss >> nome >> fone >> cadeira;
-            CLIENTE aux(nome, fone);
-            sistema.reservar(aux, cadeira);
+            sistema.reservar(std::make_shared<CLIENTE>(nome, fone), cadeira);
+        }
+        else if (cmd == "cancelar") {
+            std::string nome;
+            ss >> nome;
+            sistema.cancelar(nome);
+        }
+        else {
+            std::cout << "fail: comando invalido" << std::endl;
         }
     }
 
