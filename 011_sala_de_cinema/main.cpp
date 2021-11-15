@@ -107,7 +107,7 @@ int main(){
         else if (cmd == "show") {
             std::cout << sistema.show() << std::endl;
         }
-        else if (cmd == "reservar") { // ERRO AQUI
+        else if (cmd == "reservar") {
             std::string nome {};
             int fone {};
             int cadeira {};
