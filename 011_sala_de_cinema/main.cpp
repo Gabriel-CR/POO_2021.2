@@ -49,31 +49,19 @@ public:
         return os;
     }
 
-    bool presenteNaSala(std::string nome){
-        for (int i = 0; i < this->maxCadeiras; i++) {
-            if (cadeiras[i]->getNome() == nome)
-                return true;
-        }
-        return false;
-    }
-
     void reservar(const std::shared_ptr<CLIENTE>& c, int cadeira){
         if (cadeiras[cadeira] == nullptr) {
-            if (presenteNaSala(c->getNome()) == false) {
-                this->cadeiras[cadeira] = c;
-            }
-            else {
-                std::cout << "fail: cliente ja esta na sala" << std::endl;
-            }
+            this->cadeiras[cadeira] = c;
         }
         else {
             std::cout << "fail: cadeira ocupada" << std::endl;
         }
     }
 
-    void cancelar(std::string nome){
+    void cancelar(const std::string& nome){
         bool ver = false;
-        for (int i = 0; i < maxCadeiras; i++) {
+
+        for (int i = 0; i < (int)cadeiras.size(); i++) {
             if (cadeiras[i]->getNome() == nome) {
                 cadeiras[i] = nullptr;
                 ver = true;
