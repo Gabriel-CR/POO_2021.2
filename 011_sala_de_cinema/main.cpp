@@ -32,7 +32,7 @@ public:
     void init(int maxCadeiras){
         this->maxCadeiras = maxCadeiras;
         for (int i = 0; i < maxCadeiras; i++)
-            cadeiras.push_back(nullptr);
+            this->cadeiras.push_back(nullptr);
     }
 
     std::pair<bool, int> procurarPessoa(std::string nome){
@@ -72,7 +72,7 @@ public:
 
     void cancelar(const std::string& nome){
         if (procurarPessoa(nome).first == true)
-            cadeiras[procurarPessoa(nome).second] = nullptr;
+            this->cadeiras[procurarPessoa(nome).second] = nullptr;
         else
             std::cout << "fail: cliente nao esta na sala" << std::endl;
     }
