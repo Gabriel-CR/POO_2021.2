@@ -31,7 +31,7 @@ public:
         return os;
     }
 
-    std::string getId(){ return this->nome; }
+    std::string getNome(){ return this->nome; }
     std::string getNumero(){ return this->numero; }
 
     void setNome(std::string id){ this->nome = id; }
@@ -52,18 +52,17 @@ public:
     CONTATO(std::string nome = "") : nome{nome} {}
 
     void addFone(FONE f) { contatos.push_back(f); }
+
+    void show(){
+        
+    }
 };
 
 int main(){
-    FONE teste ("gab", "123456");
-
-    std::cout << teste.toString() << std::endl;
-    std::cout << teste.getId() << std::endl;
-    std::cout << teste.getNumero() << std::endl;
-    teste.setNome("cris");
-    teste.setNumero("888");
-    teste.setNumero("888+5");
-    std::cout << teste.toString() << std::endl;
+    CONTATO teste("gab");
+    FONE test ("tim", "123456");
+    teste.addFone(test);
+    teste.show();
 
     return 0;
 }
