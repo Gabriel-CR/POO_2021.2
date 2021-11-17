@@ -29,10 +29,22 @@ class SALA{
 public:
     SALA(int cadeiras = 0) : maxCadeiras{cadeiras} {}
 
-    void init(int maxCadeiras) {
+    void init(int maxCadeiras){
         this->maxCadeiras = maxCadeiras;
         for (int i = 0; i < maxCadeiras; i++)
             cadeiras.push_back(nullptr);
+    }
+
+    std::pair<bool, int> procurarPessoa(std::string nome){
+        bool res = false;
+        int pos {0};
+        for (int i = 0; i < (int)cadeiras.size(); i++) {
+            if (cadeiras[i] != nullptr && cadeiras[i]->getNome() == nome) {
+                res = true;
+                pos = i;
+                return std::make_pair(res, pos);
+            }
+        }
     }
 
     std::string show(){
@@ -50,26 +62,19 @@ public:
     }
 
     void reservar(const std::shared_ptr<CLIENTE>& c, int cadeira){
-        if (cadeiras[cadeira] == nullptr) {
+        if (procurarPessoa(c->getNome()).first == false && cadeiras[cadeira] == nullptr)
             this->cadeiras[cadeira] = c;
-        }
-        else {
+        else if (procurarPessoa(c->getNome()).first == true)
+            std::cout << "fail: pessoa ja esta na sala" << std::endl;
+        else
             std::cout << "fail: cadeira ocupada" << std::endl;
-        }
     }
 
     void cancelar(const std::string& nome){
-        bool ver = false;
-
-        for (int i = 0; i < (int)cadeiras.size(); i++) {
-            if (cadeiras[i]->getNome() == nome) {
-                cadeiras[i] = nullptr;
-                ver = true;
-            }
-        }
-        if (ver == false) {
+        if (procurarPessoa(nome).first == true)
+            cadeiras[procurarPessoa(nome).second] = nullptr;
+        else
             std::cout << "fail: cliente nao esta na sala" << std::endl;
-        }
     }
 };
 
