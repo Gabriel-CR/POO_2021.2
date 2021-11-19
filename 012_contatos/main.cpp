@@ -4,8 +4,16 @@
 #include <string>
 
 class FONE {
-    std::string nome;
+    std::string operadora;
     std::string numero;
+
+public:
+    FONE(std::string operadora = "", std::string numero = "") : operadora{operadora}, numero{numero} {}
+
+    std::string toString(){
+        std::string os {operadora + ":" + numero};
+        return os;
+    }
 
     bool validacao(std::string numero){
         std::string::iterator it1;
@@ -23,18 +31,10 @@ class FONE {
         return true;
     }
 
-public:
-    FONE(std::string nome = "", std::string numero = "") : nome{nome}, numero{numero} {}
-
-    std::string toString(){
-        std::string os {nome + ":" + numero};
-        return os;
-    }
-
-    std::string getNome(){ return this->nome; }
+    std::string getOperadora(){ return this->operadora; }
     std::string getNumero(){ return this->numero; }
 
-    void setNome(std::string id){ this->nome = id; }
+    void setNome(std::string id){ this->operadora = id; }
     void setNumero(std::string numero){
         if (validacao(numero) == true)
             this->numero = numero;
@@ -51,18 +51,84 @@ class CONTATO {
 public:
     CONTATO(std::string nome = "") : nome{nome} {}
 
-    void addFone(FONE f) { contatos.push_back(f); }
+    void addFone(FONE f) {
+        if (f.validacao(f.getNumero()) == true) {
+            contatos.push_back(f);
+        }
+        else {
+            std::cout << "fail: numero invalido" << std::endl;
+        }
+    }
 
-    void show(){
-        
+    std::string getNome() { return this->nome; }
+    void setNome(std::string nome) { this->nome = nome; }
+
+    std::string show(){
+        std::string os {"- " + nome + " "};
+        for (int i = 0; i < (int)contatos.size(); i++) {
+            os += "[" + std::to_string(i) + ":" + contatos.front().toString() + "] ";
+            FONE aux = contatos.front();
+            contatos.pop_front();
+            contatos.push_back(aux);
+        }
+        return os;
+    }
+
+    void removerTelefone(int indice){
+        if (indice > (int)contatos.size()) {
+            std::cout << "fail: indice nao encontrado na lista" << std::endl;
+        }
+        else {
+            for (int i = 0; i <= indice; i++) {
+                if (i == indice) {
+                    contatos.pop_front();
+                }
+                FONE aux = contatos.front();
+                contatos.pop_front();
+                contatos.push_back(aux);
+            }
+        }
     }
 };
 
 int main(){
-    CONTATO teste("gab");
-    FONE test ("tim", "123456");
-    teste.addFone(test);
-    teste.show();
+    CONTATO contatos;
+    std::cout << "SUA LISTA DE CONTATOS ESTA PRONTA" << std::endl;
+
+    while (true) {
+        std::string line;
+        std::getline(std::cin, line);
+        std::stringstream ss(line);
+        std::string cmd;
+        ss >> cmd;
+
+        if (cmd == "end") {
+            break;
+        }
+        else if (cmd == "init") {
+            std::string nome {};
+            ss >> nome;
+            contatos.setNome(nome);
+        }
+        else if (cmd == "show") {
+            std::cout << contatos.show() << std::endl;
+        }
+        else if (cmd == "add") {
+            std::string operadora {};
+            std::string numero {};
+            ss >> operadora >> numero;
+            FONE aux(operadora, numero);
+            contatos.addFone(aux);
+        }
+        else if (cmd == "rm") {
+            int indice {};
+            ss >> indice;
+            contatos.removerTelefone(indice);
+        }
+        else {
+            std::cout << "fail: comando invalido" << std::endl;
+        }
+    }
 
     return 0;
 }
