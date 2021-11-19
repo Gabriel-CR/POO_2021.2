@@ -1,5 +1,5 @@
 #include <iostream>
-#include <list>
+#include <vector>
 #include <sstream>
 #include <string>
 
@@ -45,19 +45,17 @@ public:
 
 class CONTATO {
     std::string prefixo;
-    std::list<FONE> contatos;
+    std::vector<FONE> contatos;
     std::string nome;
 
 public:
     CONTATO(std::string nome = "") : nome{nome} {}
 
     void addFone(FONE f) {
-        if (f.validacao(f.getNumero()) == true) {
+        if (f.validacao(f.getNumero()) == true)
             contatos.push_back(f);
-        }
-        else {
+        else
             std::cout << "fail: numero invalido" << std::endl;
-        }
     }
 
     std::string getNome() { return this->nome; }
@@ -65,29 +63,16 @@ public:
 
     std::string show(){
         std::string os {"- " + nome + " "};
-        for (int i = 0; i < (int)contatos.size(); i++) {
-            os += "[" + std::to_string(i) + ":" + contatos.front().toString() + "] ";
-            FONE aux = contatos.front();
-            contatos.pop_front();
-            contatos.push_back(aux);
-        }
+        for (int i = 0; i < (int)contatos.size(); i++)
+            os += "[" + std::to_string(i) + ":" + contatos[i].toString() + "] ";
         return os;
     }
 
     void removerTelefone(int indice){
-        if (indice > (int)contatos.size()) {
+        if (indice > (int)contatos.size())
             std::cout << "fail: indice nao encontrado na lista" << std::endl;
-        }
-        else {
-            for (int i = 0; i <= indice; i++) {
-                if (i == indice) {
-                    contatos.pop_front();
-                }
-                FONE aux = contatos.front();
-                contatos.pop_front();
-                contatos.push_back(aux);
-            }
-        }
+        else
+            contatos.erase(contatos.begin() + indice);
     }
 };
 
