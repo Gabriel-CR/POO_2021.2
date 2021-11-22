@@ -34,7 +34,7 @@ public:
     std::string getOperadora(){ return this->operadora; }
     std::string getNumero(){ return this->numero; }
 
-    void setNome(std::string id){ this->operadora = id; }
+    void setOperadora(std::string id){ this->operadora = id; }
     void setNumero(std::string numero){
         if (validacao(numero) == true)
             this->numero = numero;
@@ -59,7 +59,7 @@ public:
     }
 
     std::string getNome() { return this->nome; }
-    void setNome(std::string nome) { this->nome = nome; }
+    void setOperadora(std::string nome) { this->nome = nome; }
 
     std::string show(){
         std::string os {"- " + nome + " "};
@@ -93,7 +93,7 @@ int main(){
         else if (cmd == "init") {
             std::string nome {};
             ss >> nome;
-            contatos.setNome(nome);
+            contatos.setOperadora(nome);
         }
         else if (cmd == "show") {
             std::cout << contatos.show() << std::endl;
