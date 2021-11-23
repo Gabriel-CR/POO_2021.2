@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 class FONE {
     std::string operadora;
@@ -72,12 +73,11 @@ public:
             std::cout << "fail: numero invalido" << std::endl;
     }
     std::string getFone(int indice){
-        if ((int) fones.size() > indice) {
-            std::cout << "fail: contato nao encontrado" << std::endl;
-            return;
+        if ((int)fones.size() < indice) {
+            return fones[indice].toString();
         }
         else {
-            return fones[indice].toString();
+            std::cout << "fail: contato nao encontrado" << std::endl;
         }
     }
     std::string getNome(){
@@ -111,17 +111,52 @@ class AGENDA {
 public:
     AGENDA(){}
 
-    void addContato(CONTATO c){
-        if (findPos(c.getNome()) == -1) {
-            contatos.push_back(c);
+    void addContato(std::string nome, std::string prefixo, std::string operadora, std::string numero){
+        if (findPos(nome) == -1) {
+            contatos.push_back(CONTATO(prefixo, nome));
+            contatos[(int)contatos.size()].addFone(FONE(operadora, numero));
         }
         else {
-            
+            int pos = findPos(nome);
+            contatos[pos].addFone(FONE(operadora, numero));
         }
+    }
+
+    std::string show(){
+        std::string os {};
+        for (int i = 0; i < (int)contatos.size(); i++){
+            os += contatos[i].toString() + "\n";
+        }
+        return os;
     }
 };
 
 int main(){
+    AGENDA sistema;
+    std::cout << "SUA AGENDA DE CONTATOS ESTA PRONTA" << std::endl;
+
+    while (true) {
+        std::string line;
+        std::getline(std::cin, line);
+        std::stringstream ss(line);
+        std::string cmd;
+        ss >> cmd;
+
+        if (cmd == "end") {
+            break;
+        }
+        else if (cmd == "show") {
+            std::cout << sistema.show() << std::endl;
+        }
+        else if (cmd == "add") {
+            std::string nome;
+            std::string prefixo;
+            std::string operadora;
+            std::string numero;
+            ss >> nome >> prefixo >> operadora >> numero;
+            sistema.addContato(nome, prefixo, operadora, numero);
+        }
+    }
 
     return 0;
 }
