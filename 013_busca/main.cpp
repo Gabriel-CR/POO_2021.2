@@ -50,13 +50,19 @@ class CONTATO {
     std::vector<FONE> fones;
 
 public:
-    // std::string prefixo = "",
-    CONTATO(std::string nome = "", std::vector<FONE> fones = {}) : nome{nome}, fones{fones} {};
+    CONTATO(std::string nome, FONE f) : nome{nome}{
+        if (f.validacao(f.getNumero()) == true) {
+            fones.push_back(f);
+        }
+        else {
+            std::cout << "fail: numero invalido" << std::endl;
+        }
+    };
 
     std::string toString(){
         std::string os {"- " + nome + " "};
         for (int i=0; i < (int)fones.size(); i++) {
-            os += "[" + fones[i].toString() + "] ";
+            os += "[" + std::to_string(i) + ":" + fones[i].toString() + "] ";
         }
         return os;
     }
@@ -74,6 +80,7 @@ public:
     }
     std::string getFone(int indice){ return this->fones[indice].getNumero(); }
     int getQtdFones(){ return this->fones.size(); }
+    void removeFone(int indice) { this->fones.erase(fones.begin() + indice); }
 };
 
 class AGENDA {
@@ -92,6 +99,34 @@ class AGENDA {
 public:
     AGENDA(){};
 
+    void addContato(std::string nome, std::string operadora, std::string numero){
+        if (findPos(nome) == -1) { // CASO NOVO CONTATO
+            contatos.push_back(CONTATO(nome, FONE(operadora, numero)));
+        }
+        else { // CASO CONTATO JÁ EXISTENTE
+            int pos = findPos(nome);
+            contatos[pos].setFone(FONE(operadora, numero));
+        }
+    }
+
+    void rmFone(std::string nome, int indice) {
+        int pos = findPos(nome);
+        contatos[pos].removeFone(indice);
+    }
+
+    void rm(std::string nome){
+        int pos = findPos(nome);
+        contatos.erase(contatos.begin() + pos);
+    }
+
+    void search(std::string proc){
+        for (int i = 0; i < (int)contatos.size(); i++) {
+            if (contatos[i].toString().find(proc) != std::string::npos) {
+                std::cout << contatos[i].toString() << std::endl;
+            }
+        }
+    }
+
     std::string show(){
         std::sort(contatos.begin(), contatos.end(), [](CONTATO c1, CONTATO c2){
             return c1.getNome() < c2.getNome();
@@ -102,28 +137,6 @@ public:
             os += contatos[i].toString() + "\n";
         }
         return os;
-    }
-
-    void addContato(std::string nome, std::vector<FONE> fones){
-        if (findPos(nome) == -1) { // CASO NOVO CONTATO
-            for (int i = 0; i < (int)fones.size(); i++) {
-                if (fones[i].validacao(fones[i].getNumero()) == false) {
-                    fones.erase(fones.begin() + i);
-                    std::cout << "fail: numero invalido" << std::endl;
-                }
-            }
-            contatos.push_back(CONTATO(nome, fones));
-        }
-        else { // CASO CONTATO JÁ EXISTENTE
-            int pos = findPos(nome);
-            for (int i = 0; i < (int)contatos[pos].getQtdFones(); i++) {
-                for (int j = 0; j < (int)fones.size(); j++) {
-                    if (contatos[pos].getFone(i) != fones[j].getNumero()) {
-                        contatos[pos].setFone(fones[j]);
-                    }
-                }
-            }
-        }
     }
 };
 
@@ -146,19 +159,29 @@ int main(){
         }
         else if (cmd == "add") {
             std::string nome;
-            std::cin >> nome;
-            std::vector<FONE> fones;
-            
-            while (true) { // ARRUMAR AQUI
-                std::string operadora;
-                std::cin >> operadora;
-                std::string numero;
-                std::cin >> numero;
-                FONE aux(operadora, numero);
-                fones.push_back(aux);
-            }
-
-            agenda.addContato(nome, fones);
+            std::string operadora;
+            std::string numero;
+            ss >> nome >> operadora >> numero;
+            agenda.addContato(nome, operadora, numero);
+        }
+        else if (cmd == "rmFone") {
+            std::string nome {};
+            int indice {};
+            ss >> nome >> indice;
+            agenda.rmFone(nome, indice);
+        }
+        else if (cmd == "rm") {
+            std::string nome {};
+            ss >> nome;
+            agenda.rm(nome);
+        }
+        else if (cmd == "search") {
+            std::string proc {};
+            ss >> proc;
+            agenda.search(proc);
+        }
+        else {
+            std::cout << "fail: comando invalido" << std::endl;
         }
     }
 
