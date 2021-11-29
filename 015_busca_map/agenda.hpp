@@ -1,5 +1,42 @@
+#include <iostream>
+#include <vector>
+#include <sstream>
 #include <algorithm>
-#include "contato.hpp"
+
+class FONE {
+    std::string operadora;
+    std::string numero;
+
+public:
+    FONE(std::string id = "", std::string numero = "");
+
+    std::string toString();
+
+    // RETORNA TRUE CASO O NÚMERO SEJA VÁLIDO
+    bool validacao(std::string numero);
+
+    void setNumero(std::string numero);
+    std::string getNumero();
+};
+
+class CONTATO {
+    std::string nome;
+    std::string prefixo;
+    std::vector<FONE> fones;
+
+public:
+    CONTATO(std::string nome, FONE f);
+
+    std::string toString();
+
+    void setNome(std::string nome);
+    std::string getNome();
+
+    void setFone(FONE f);
+    std::string getFone(int indice);
+    int getQtdFones();
+    void removeFone(int indice);
+};
 
 class AGENDA {
     std::vector<CONTATO> contatos;
