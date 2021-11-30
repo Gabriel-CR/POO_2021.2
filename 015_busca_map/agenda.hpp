@@ -8,7 +8,7 @@ class FONE {
     std::string numero;
 
 public:
-    FONE(std::string id = "", std::string numero = "");
+    FONE(std::string id, std::string numero);
 
     std::string toString();
 
@@ -44,7 +44,7 @@ class AGENDA {
     int findPos(std::string nome);
 
 public:
-    AGENDA(){};
+    AGENDA();
 
     void addContato(std::string nome, std::string operadora, std::string numero);
     void rmFone(std::string nome, int indice);
