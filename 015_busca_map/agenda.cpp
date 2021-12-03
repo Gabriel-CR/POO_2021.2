@@ -40,7 +40,7 @@
 // CONTATO
     CONTATO::CONTATO(std::string nome, FONE f) : nome{nome}{
         if (f.validacao(f.getNumero()) == true) {
-            fone.push_back(f);
+            fones[(int)fones.size()] = f;
         }
         else {
             std::cout << "fail: numero invalido" << std::endl;
@@ -49,8 +49,8 @@
 
     std::string CONTATO::toString(){
         std::string os {"- " + nome + " "};
-        for (int i=0; i < (int)fone.size(); i++) {
-            os += "[" + std::to_string(i) + ":" + fone[i].toString() + "] ";
+        for (auto fone : fones) {
+            os += "[" + std::to_string(fone.first) + ":" + fone.second.toString() + "] ";
         }
         return os;
     }
@@ -65,7 +65,7 @@
 
     void CONTATO::setFone(FONE f){
         if (f.validacao(f.getNumero()) == true) {
-            fone.push_back(f);
+            fones[(int)fones.size()] = f;
         }
         else {
             f.validacao(f.getNumero());
@@ -73,59 +73,69 @@
     }
 
     std::string CONTATO::getFone(int indice){
-        return this->fone[indice].getNumero();
+        return this->fones[indice].getNumero();
     }
 
     int CONTATO::getQtdFones(){
-        return this->fone.size();
+        return this->fones.size();
     }
 
     void CONTATO::removeFone(int indice){
-        this->fone.erase(fone.begin() + indice);
+        this->fones.erase(indice);
+        while (indice < (int)fones.size()) {
+            fones[indice] = fones[indice+1];
+            fones.erase(indice+1);
+            indice++;
+        }
+        
     }
 
 // AGENDA
-    int AGENDA::findPos(std::string nome = ""){
-        for (int i = 0; i < (int) contato.size(); i++) {
-            if (contato[i].getNome() == nome) {
-                return i;
+    int AGENDA::findPos(std::string nome){
+        for (auto contato : contatos) {
+            if (contato.second.getNome() == nome) {
+                return contato.first;
             }
         }
         return -1;
     }
 
     void AGENDA::addContato(std::string nome, std::string operadora, std::string numero){
-        if (findPos(nome) == -1) { // CASO NOVO CONTATO
-            contato.push_back(CONTATO(nome, FONE(operadora, numero)));
+        int pos = findPos(nome);
+
+        if (pos == -1) { // CASO NOVO CONTATO
+            FONE aux(operadora, numero);
+            CONTATO novo(nome, aux);
+            contatos[(int)contatos.size()] = novo;
         }
         else { // CASO CONTATO JÁ EXISTENTE
-            int pos = findPos(nome);
-            contato[pos].setFone(FONE(operadora, numero));
+            FONE f(operadora, numero);
+            contatos[pos].setFone(f);
         }
     }
-    void AGENDA::rmFone(std::string nome, int indice){
+    /*void AGENDA::rmFone(std::string nome, int indice){
         int pos = findPos(nome);
-        contato[pos].removeFone(indice);
+        contatos[pos].removeFone(indice);
     }
     void AGENDA::rm(std::string nome){
         int pos = findPos(nome);
-        contato.erase(contato.begin() + pos);
+        contatos.erase(pos);
     }
     void AGENDA::search(std::string proc){
-        for (int i = 0; i < (int)contato.size(); i++) {
-            if (contato[i].toString().find(proc) != std::string::npos) {
-                std::cout << contato[i].toString() << std::endl;
+        for (int i = 0; i < (int)contatos.size(); i++) {
+            if (contatos[i].toString().find(proc) != std::string::npos) {
+                std::cout << contatos[i].toString() << std::endl;
             }
         }
     }
     std::string AGENDA::show(){
-        std::sort(contato.begin(), contato.end(), [](CONTATO c1, CONTATO c2){
+        std::sort(contatos.begin(), contatos.end(), [](CONTATO c1, CONTATO c2){
             return c1.getNome() < c2.getNome();
         });
         
         std::string os {};
-        for (int i = 0; i < (int)contato.size(); i++) {
-            os += contato[i].toString() + "\n";
+        for (auto contato : contatos) {
+            os += contato.second.toString() + "\n";
         }
         return os;
-    }
+    }*/

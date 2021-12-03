@@ -23,8 +23,7 @@ public:
 class CONTATO {
     std::string nome;
     std::string prefixo;
-    std::vector<FONE> fone;
-    //std::map<int, FONE> fones;
+    std::map<int, FONE> fones;
 
 public:
     CONTATO(std::string nome, FONE f);
@@ -41,12 +40,13 @@ public:
 };
 
 class AGENDA {
-    std::vector<CONTATO> contato;
-    //std::map<int, CONTATO> contatos;
+    //std::vector<CONTATO> contato;
+    std::map<int, CONTATO> contatos;
     // RETORNA -1 CASO NÃO TENHA O CONTATO NA LISTA, RETORNA A POSIÇÃO CASO CONTRÁRIO
-    int findPos(std::string nome);
+    //int findPos(std::string nome);
 
 public:
+    int findPos(std::string nome);
     void addContato(std::string nome, std::string operadora, std::string numero);
     void rmFone(std::string nome, int indice);
     void rm(std::string nome);
