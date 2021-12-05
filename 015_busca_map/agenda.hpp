@@ -1,6 +1,5 @@
 #include <iostream>
 #include <map>
-#include <vector>
 #include <sstream>
 #include <algorithm>
 
@@ -28,6 +27,9 @@ class CONTATO {
 public:
     CONTATO(std::string nome, FONE f);
 
+    CONTATO(){
+    }
+
     std::string toString();
 
     void setNome(std::string nome);
@@ -40,16 +42,19 @@ public:
 };
 
 class AGENDA {
-    //std::vector<CONTATO> contato;
     std::map<int, CONTATO> contatos;
-    // RETORNA -1 CASO NÃO TENHA O CONTATO NA LISTA, RETORNA A POSIÇÃO CASO CONTRÁRIO
-    //int findPos(std::string nome);
 
 public:
+    // RETORNA -1 CASO NÃO TENHA O CONTATO NA LISTA, RETORNA A POSIÇÃO CASO CONTRÁRIO
     int findPos(std::string nome);
+
     void addContato(std::string nome, std::string operadora, std::string numero);
+
     void rmFone(std::string nome, int indice);
+
     void rm(std::string nome);
+
     void search(std::string proc);
+
     std::string show();
 };
