@@ -125,10 +125,6 @@ void AGENDA::search(std::string proc){
 }
 
 std::string AGENDA::show(){
-    /*std::sort(contatos.begin(), contatos.end(), [](CONTATO c1, CONTATO c2){ ERRO AQUI!!!
-        return c1.getNome() < c2.getNome();
-    });*/
-        
     std::string os {};
     for (auto contato : contatos) {
         os += contato.second.toString() + "\n";
