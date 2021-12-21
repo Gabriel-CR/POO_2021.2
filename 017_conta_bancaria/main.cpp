@@ -8,11 +8,11 @@ protected:
     std::string clientId;
     std::string type; //CC or CP
 public:
-    CONTA(int id, std::string clientId) : id{id}, clientId{clientId}{
+    CONTA(int id, std::string idClient) : id{id}, clientId{idClient} {
     }
-    ~CONTA();
+    virtual ~CONTA(){};
 
-    virtual void monthlyUpdate();
+    virtual void monthlyUpdate() = 0;
     //saque
     void withdraw(float value){
         if (this->balance - value < 0)
@@ -25,11 +25,11 @@ public:
         this->balance += value;
     }
     //transferencia
-    void transfer(CONTA other, float value){
+    void transfer(CONTA* other, float value){
         if (this->balance - value < 0)
             std::cout << "fail: voce nao tem esse valor na sua conta" << std::endl;
         else
-            other.deposit(value);
+            other->deposit(value);
     }
 
     //GETS and SETS
@@ -46,11 +46,13 @@ public:
         return this->type;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const CONTA& conta) {
-        os << conta.id << ":" << conta.clientId << ":" << conta.balance << ":" << conta.type;
-        return os;
-    }
+    friend std::ostream& operator<<(std::ostream& os, const CONTA& conta);
 };
+
+std::ostream& operator<<(std::ostream& os, const CONTA& conta) {
+    os << conta.id << ":" << conta.clientId << ":" << conta.balance << ":" << conta.type;
+    return os;
+}
 
 class CONTA_CORRENTE : public CONTA {
 public:
@@ -66,7 +68,7 @@ public:
 
 class CONTA_POUPANCA : public CONTA {
 public:
-    CONTA_POUPANCA(int id, std::string idClient) : CONTA{id, idClient} {
+    CONTA_POUPANCA(int id, std::string idClient) : CONTA{id, idClient}{
         this->type = "CP";
     }
     //aumenta saldo em 1%
@@ -76,39 +78,50 @@ public:
 };
 
 class CLIENTE {
-    std::string clientId;
-    std::vector<CONTA> contas;
+    std::string nameClient;
+    std::vector<CONTA*> contas;
 
 public:
-    CLIENTE(std::string clientId) : clientId{clientId}{
+    CLIENTE(std::string clientId) : nameClient{clientId}{
     }
-    void addAccount(CONTA conta){;
+    void addAccount(CONTA* conta){;
         contas.push_back(conta);
     }
     //GETS and SETS
     std::string getClientId(){
-        return this->clientId;
+        return this->nameClient;
     }
     void setClientId(std::string clientId){
-        this->clientId = clientId;
+        this->nameClient = clientId;
     }
-    std::vector<CONTA> getAccounts(){
+    std::vector<CONTA*> getAccounts(){
         return this->contas;
     }
-    void setAccounts(std::vector<CONTA> contas){
+    void setAccounts(std::vector<CONTA*> contas){
         this-> contas = contas;
     }
+
+    friend std::ostream& operator<<(std::ostream& os, const CLIENTE& client);
 };
 
-int main(){
-    CONTA teste(0, "Carlos");
-    CONTA teste1(1, "Gabriel");
-    teste.deposit(1000);
-    teste.withdraw(500);
-    teste.transfer(teste1, 600);
+std::ostream& operator<<(std::ostream& os, const CLIENTE& client) {
+    os << "- " << client.nameClient;
+    for (CONTA* conta : client.contas) {
+        os << " " << *conta;
+    }
+    return os;
+}
 
-    std::cout << teste << std::endl;
-    std::cout << teste1 << std::endl;
+int main(){
+    CONTA_CORRENTE teste(0, "Carlos");
+    CONTA_POUPANCA teste1(1, "Gabriel");
+    
+    CLIENTE eu("Gabriel");
+    eu.addAccount(&teste);
+    eu.addAccount(&teste1);
+
+    std::cout << eu << std::endl;
+    //std::cout << teste1 << std::endl;
 
     return 0;
 }
