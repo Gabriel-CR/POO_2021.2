@@ -52,7 +52,7 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const CONTA& conta) {
-    os << conta.id << ":" << conta.clientId << ":" << conta.balance << ":" << conta.type;
+    os << conta.clientId << ":" << conta.balance << ":" << conta.type;
     return os;
 }
 
@@ -107,10 +107,11 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const CLIENTE& client) {
-    os << "- " << client.nameClient << '\n';
-    for (CONTA* conta : client.contas) {
-        os << " " << *conta << '\n';
+    os << "[";
+    for (auto conta : client.contas) {
+        os << conta->getId();
     }
+    os << "]\n";
     return os;
 }
 
@@ -131,8 +132,8 @@ public:
 
         if (cliente == clientes.end()) { //caso cliente não exista
             // CRIANDO CLIENTE COM DUAS CONTAS
-            CONTA_CORRENTE cc((int)clientes.size(), clientId);
-            CONTA_POUPANCA cp((int)clientes.size(), clientId);
+            CONTA_CORRENTE cc(nextAccontId, clientId);
+            CONTA_POUPANCA cp(nextAccontId + 1, clientId);
             CLIENTE cliAux(clientId);
             cliAux.addAccount(&cc);
             cliAux.addAccount(&cp);
@@ -141,20 +142,27 @@ public:
             clientes[clientId] = std::make_shared<CLIENTE>(cliAux);
 
             // COLOCANDO AS CONTAS DO NOVO CLIENTE NA LISTA DE CONTAS DO BANCO
-            contas[(int)contas.size()] = std::make_shared<CONTA_CORRENTE>(cc);
-            contas[(int)contas.size()] = std::make_shared<CONTA_POUPANCA>(cp);
+            contas[nextAccontId] = std::make_shared<CONTA_CORRENTE>(cc);
+            contas[nextAccontId + 1] = std::make_shared<CONTA_POUPANCA>(cp);
+
+            nextAccontId += 2;
         }
     }
 
     friend std::ostream& operator<<(std::ostream& os, const AGENCIA_BANCARIA& banco);
 };
 
+// std::map<std::string, std::shared_ptr<CLIENTE>> clientes;
+// std::map<int, std::shared_ptr<CONTA>> contas;
 std::ostream& operator<<(std::ostream& os, const AGENCIA_BANCARIA& banco){
+    os << "Clients: \n";
     for (auto cliente : banco.clientes) {
-        os << cliente.first << "[0 1]" << "\n";
+        os << "- " << cliente.first << *cliente.second; // [erro aqui!]
     }
+    
+    os << "Acconts: \n";
     for (auto conta : banco.contas) {
-        std::cout << conta.first << " " << *conta.second << std::endl;
+        std::cout << conta.first << ":" << *conta.second << std::endl;
     }
     return os;
 }
@@ -162,11 +170,9 @@ std::ostream& operator<<(std::ostream& os, const AGENCIA_BANCARIA& banco){
 int main(){
     AGENCIA_BANCARIA banco;
 
-    banco.addClient("fer");
-    banco.addClient("fal");
-    banco.addClient("bol");
-    banco.addClient("vin");
-    banco.addClient("fnx");
+    banco.addClient("Almir");
+    banco.addClient("Julia");
+    banco.addClient("Maria");
 
     std::cout << banco << std::endl;
 
