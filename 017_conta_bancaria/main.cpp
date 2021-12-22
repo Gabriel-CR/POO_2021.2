@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <sstream>
 
 class CONTA {
 protected:
@@ -18,7 +19,7 @@ public:
     //saque
     void withdraw(float value){
         if (this->balance - value < 0)
-            std::cout << "fail: voce nao tem esse valor na sua conta" << std::endl;
+            throw std::runtime_error("fail: voce nao tem esse valor na sua conta");
         else
             this->balance -= value;
     }
@@ -27,11 +28,15 @@ public:
         this->balance += value;
     }
     //transferencia
-    void transfer(CONTA* other, float value){
-        if (this->balance - value < 0)
-            std::cout << "fail: voce nao tem esse valor na sua conta" << std::endl;
-        else
+    void transfer(std::shared_ptr<CONTA> other, float value){
+        if (this->balance - value < 0) {
+            throw std::runtime_error("fail: voce nao tem esse valor na sua conta");
+        }
+        else {
             other->deposit(value);
+            this->balance -= value;
+        }
+            
     }
 
     //GETS and SETS
@@ -52,7 +57,7 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const CONTA& conta) {
-    os << conta.id << ":" << conta.clientId << ":" << conta.balance << ":" << conta.type;
+    os << conta.clientId << ":" << conta.balance << ":" << conta.type;
     return os;
 }
 
@@ -107,10 +112,11 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const CLIENTE& client) {
-    os << "- " << client.nameClient;
-    /*for (CONTA* conta : client.contas) {
-        os << " " << *conta;
-    }*/
+    os << "[ ";
+    for (int i = 0; i < (int)client.contas.size(); i++) {
+        os << client.contas[i]->getId() << " ";
+    }
+    os << "]\n";
     return os;
 }
 
@@ -126,15 +132,54 @@ class AGENCIA_BANCARIA {
 public:
     AGENCIA_BANCARIA(){
     }
+
     void addClient(std::string clientId){
         auto cliente = clientes.find(clientId);
 
-        if (cliente == clientes.end()) {
-            clientes[clientId] = std::make_shared<CLIENTE>(clientId);
-            CONTA_CORRENTE auxCC((int)contas.size(), clientId);
-            CONTA_POUPANCA auxCP((int)contas.size(), clientId);
-            contas[(int)contas.size()] = std::make_shared<CONTA>(auxCC);
-            contas[(int)contas.size()] = std::make_shared<CONTA>(auxCP);
+        if (cliente == clientes.end()) { //caso cliente não exista
+            // CRIANDO CLIENTE COM DUAS CONTAS
+            CONTA_CORRENTE cc(nextAccontId, clientId);
+            CONTA_POUPANCA cp(nextAccontId + 1, clientId);
+            CLIENTE cliAux(clientId);
+            cliAux.addAccount(&cc);
+            cliAux.addAccount(&cp);
+
+            // COLOCANDO O CLIENTE NA LISTA DE CLIENTES DO BANCO
+            clientes[clientId] = std::make_shared<CLIENTE>(cliAux);
+
+            // COLOCANDO AS CONTAS DO NOVO CLIENTE NA LISTA DE CONTAS DO BANCO
+            contas[nextAccontId] = std::make_shared<CONTA_CORRENTE>(cc);
+            contas[nextAccontId + 1] = std::make_shared<CONTA_POUPANCA>(cp);
+
+            nextAccontId += 2;
+        }
+        else {
+            throw std::runtime_error("fail: cliente ja existe");
+        }
+    }
+
+    void withdraw(int idConta, float value){
+        contas[idConta]->withdraw(value);
+    }
+
+    void deposit(int idConta, float value){
+        contas[idConta]->deposit(value);
+    }
+
+    void transfer(int contaDe, int contaPara, float value){
+        auto de = contas.find(contaDe);
+        auto para = contas.find(contaPara);
+        if (de != contas.end() && para != contas.end()) {
+            contas[contaDe]->transfer(contas[contaPara], value);
+        }
+        else {
+            throw std::runtime_error("fail: conta nao encontrada");
+        }
+    }
+
+    void monthlyUpdate(){
+        for (auto conta : contas) {
+            conta.second->monthlyUpdate();
         }
     }
 
@@ -142,21 +187,72 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const AGENCIA_BANCARIA& banco){
+    os << "Clients: \n";
+    int i {0};
     for (auto cliente : banco.clientes) {
-        os << &cliente << "\n";
+        os << "- " << cliente.first << " [" << std::to_string(i) << ", " << std::to_string(i + 1) << "]\n"; // [erro aqui!]
+        i += 2;
     }
+    os << "Acconts: \n";
+    for (auto conta : banco.contas) {
+        std::cout << conta.first << ":" << *conta.second << std::endl;
+    }
+    return os;
 }
 
 int main(){
     AGENCIA_BANCARIA banco;
+    std::cout << "SISTEMA BANCARIO PRONTO" << std::endl;
 
-    banco.addClient("fer");
-    banco.addClient("fal");
-    banco.addClient("bol");
-    banco.addClient("vin");
-    banco.addClient("fnx");
+    while (true) {
+        std::string line;
+        std::getline(std::cin, line);
+        std::stringstream ss(line);
+        std::string cmd;
+        ss >> cmd;
 
-    std::cout << banco << std::endl;
+        try {
+            if (cmd == "end") {
+                break;
+            }
+            else if (cmd == "show") {
+                std::cout << banco << std::endl;
+            }
+            else if (cmd == "addCli") {
+                std::string nome;
+                ss >> nome;
+                banco.addClient(nome);
+            }
+            else if (cmd == "saque") {
+                int id {0};
+                float valor {0};
+                ss >> id >> valor;
+                banco.withdraw(id, valor);
+            }
+            else if (cmd == "deposito") {
+                int id {0};
+                float valor {0};
+                ss >> id >> valor;
+                banco.deposit(id, valor);
+            }
+            else if (cmd == "transf") {
+                int id1 {0};
+                int id2 {0};
+                float valor {0};
+                ss >> id1 >> id2 >> valor;
+                banco.transfer(id1, id2, valor);
+            }
+            else if (cmd == "update") {
+                banco.monthlyUpdate();
+            }
+            else {
+                std::cout << "fail: comando invalido" << std::endl;
+            }
+        }
+        catch (std::runtime_error& e) {
+            std::cout << e.what() << std::endl;
+        }
+    }
 
     return 0;
 }
