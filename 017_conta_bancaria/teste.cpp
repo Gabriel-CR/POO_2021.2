@@ -140,9 +140,9 @@ public:
             // COLOCANDO O CLIENTE NA LISTA DE CLIENTES DO BANCO
             clientes[clientId] = std::make_shared<CLIENTE>(cliAux);
 
-            // COLOCANDO AS CONTAS DO NOVO CLIENTE NA LISTA DE CONTAS DO BANCO [erro]
-            contas[(int)contas.size()] = std::make_shared<CONTA>(cc);
-            contas[(int)contas.size()] = std::make_shared<CONTA>(cp);
+            // COLOCANDO AS CONTAS DO NOVO CLIENTE NA LISTA DE CONTAS DO BANCO
+            contas[(int)contas.size()] = std::make_shared<CONTA_CORRENTE>(cc);
+            contas[(int)contas.size()] = std::make_shared<CONTA_POUPANCA>(cp);
         }
     }
 
@@ -151,8 +151,10 @@ public:
 
 std::ostream& operator<<(std::ostream& os, const AGENCIA_BANCARIA& banco){
     for (auto cliente : banco.clientes) {
-        //std::vector<CONTA*> aux = cliente.second->getAccounts();
         os << cliente.first << "[0 1]" << "\n";
+    }
+    for (auto conta : banco.contas) {
+        std::cout << conta.first << " " << *conta.second << std::endl;
     }
     return os;
 }
