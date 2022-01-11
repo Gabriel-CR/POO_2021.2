@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 
 class FONE {
     std::string numero {""};
@@ -89,10 +90,10 @@ public:
     }
 
     //GETS e SETS
-    std::string getName(){
+    std::string getNome(){
         return this->nome;
     }
-    void setName(std::string nome){
+    void setNome(std::string nome){
         this->nome = nome;
     }
     std::vector<FONE> getFones(){
@@ -108,6 +109,51 @@ std::ostream& operator<<(std::ostream& os, const CONTATO& contato) {
         os << "[" << fone << "] ";
     return os;
 }
+
+class AGENDA {
+    std::map<int, CONTATO> contatos;
+    int findPos(std::string nome){
+        for (auto contato : contatos)
+            if (contato.second.getNome() == nome)
+                return contato.first;
+        return -1;
+    }
+
+public:
+    AGENDA();
+
+    CONTATO getContact(std::string nome){
+        int pos = findPos(nome);
+        if (pos != -1)
+            return this->contatos[pos];
+        else
+            throw std::runtime_error("fail: contato nao encontrado");
+    }
+
+    void addContato(CONTATO contato){
+        int pos = findPos(contato.getNome());
+        if (pos != -1) {    //CASO CONTATO NÃO EXISTA
+            contatos[contatos.size()] = contato;
+        }
+        else {              //CASO CONTATO EXISTA
+            std::vector<FONE> fones = contato.getFones();
+            for (auto fone : fones)
+                contatos[pos].addFone(fone);
+        }
+    }
+
+    /*void rmContato(std::string nome){
+        int pos = findPos(nome);
+        if (pos != -1)
+            contatos[pos].rmFone()
+        else
+            throw std::runtime_error("fail: contato nao encontrado");
+    }
+
+    std::vector<CONTATO> search(std::string pattern){
+
+    }*/
+};
 
 int main(){
     /*try {
