@@ -1,0 +1,15 @@
+addUser goku
+addUser sara
+addUser tina
+show
+
+follow goku sara
+follow goku tina
+follow sara tina
+show
+
+twittar sara hoje estou triste
+twittar tina ganhei chocolate
+twittar sara partiu ru
+twittar tina chocolate ruim
+twittar goku internet maldita
