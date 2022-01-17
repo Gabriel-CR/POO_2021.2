@@ -23,10 +23,10 @@ public:
     }
     //mount output string
     std::string toString(){
-        std::string os {std::to_string(id) + this->username + " (" + msg + ") ["};
+        std::string os {this->username + " (" + msg + ") ["};
         for (auto like : likes)
             os += like;
-        os += "]";
+        os += "]\n";
         return os;
     }
 };
@@ -44,8 +44,8 @@ public:
         this->unread[tweet->getId()] = tweet;
     }
     //stores message as a readed Message
-    void store(MESSAGE tweet){
-        this->allMsgs.insert(std::make_pair<int, MESSAGE*>(allMsgs.size(), &tweet));
+    void store(MESSAGE* tweet){
+        this->allMsgs.insert(std::pair<int, MESSAGE*>(allMsgs.size(), tweet));
     }
     //return unread and clean unread Msgs
     std::map<int, MESSAGE*> getUnread(){
@@ -65,10 +65,10 @@ public:
         else
             return *it->second;
     }
-    //return allMsgs
+    // return unread
     std::string toString(){
         std::string os;
-        for (auto msg : this->allMsgs)
+        for (auto msg : this->getUnread())
             os += std::to_string(msg.first) + ":" + msg.second->toString();
         return os;
     }
@@ -127,12 +127,12 @@ public:
         return os;
     }
 
-    std::string posts(){
-        std::string os;
-        for (auto fll : following) {
-            os += fll.second->inbox.toString();
+    std::string getPosts(){
+        std::string msg;
+        for (auto follow : this->following) {
+            msg += follow.second->getInbox().toString();
         }
-        return os;
+        return msg;
     }
 };
 
@@ -183,14 +183,18 @@ public:
         if (us == users.end())
             throw std::runtime_error("fail: nome de usuario nao encontrado");
         else {
-            std::map<int, MESSAGE*> unread = us->second->getInbox().getUnread();
-            for (auto m : unread)
-                msg += m.second->toString();
+            msg = us->second->getPosts();
         }
-        
         return msg;
     }
     // like
+    void like(std::string user, int id){
+        auto msg = this->messages.find(id);
+        if (msg == messages.end())
+            throw std::runtime_error("fail: menssagem nao encontrada");
+        else
+            msg->second->like(user);
+    }
     // unfollow
 };
 
@@ -223,7 +227,7 @@ int main(){
                 ss >> seguir >> seguido;
                 control.follow(seguir, seguido);
             }
-            else if (cmd == "twittar") { // ERRO AQUI
+            else if (cmd == "twittar") {
                 std::string userName;
                 std::string msg;
                 ss >> userName;
@@ -234,6 +238,12 @@ int main(){
                 std::string userName;
                 ss >> userName;
                 std::cout << control.timeline(userName) << std::endl;
+            }
+            else if (cmd == "like") {
+                std::string userName;
+                int id;
+                ss >> userName >> id;
+                control.like(userName, id);
             }
             else {
                 std::cout << "fail: comando invalido" << std::endl;

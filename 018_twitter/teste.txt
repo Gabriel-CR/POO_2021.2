@@ -2,7 +2,6 @@ addUser goku
 addUser sara
 addUser tina
 show
-
 follow goku sara
 follow goku tina
 follow sara tina
