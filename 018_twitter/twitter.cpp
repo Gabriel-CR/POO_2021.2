@@ -23,7 +23,7 @@ public:
     }
     //mount output string
     std::string toString(){
-        std::string os {this->username + " (" + msg + ") ["};
+        std::string os {std::to_string(id) + this->username + " (" + msg + ") ["};
         for (auto like : likes)
             os += like;
         os += "]";
@@ -32,24 +32,24 @@ public:
 };
 
 class INBOX {
-    std::map<int, MESSAGE> unread;  //store unread tweets
+    std::map<int, MESSAGE*> unread;  //store unread tweets
     std::map<int, MESSAGE*> allMsgs; //store read tweets
 
 public:
     INBOX(){
     }
     //stores message both in unread as in allMsgs
-    void receiveNew(MESSAGE tweet){
-        unread.insert(std::pair<int, MESSAGE>(unread.size(), tweet));
-        this->allMsgs.insert(std::make_pair<int, MESSAGE*>(allMsgs.size(), &tweet));
+    void receiveNew(MESSAGE* tweet){
+        this->allMsgs[tweet->getId()] = tweet;
+        this->unread[tweet->getId()] = tweet;
     }
     //stores message as a readed Message
     void store(MESSAGE tweet){
         this->allMsgs.insert(std::make_pair<int, MESSAGE*>(allMsgs.size(), &tweet));
     }
     //return unread and clean unread Msgs
-    std::map<int, MESSAGE> getUnread(){
-        std::map<int, MESSAGE> un = this->unread;
+    std::map<int, MESSAGE*> getUnread(){
+        std::map<int, MESSAGE*> un = this->unread;
         unread.clear();
         return un;
     }
@@ -76,9 +76,9 @@ public:
 
 class USER {
     std::string username;
-    std::map<std::string, USER> followers; //os meus seguidores
-    std::map<std::string, USER> following; //aqueles que eu sigo
-    std::shared_ptr<INBOX> inbox;
+    std::map<std::string, USER*> followers; //os meus seguidores
+    std::map<std::string, USER*> following; //aqueles que eu sigo
+    INBOX inbox;
 
 public:
     // Initialize all attributes
@@ -86,8 +86,8 @@ public:
     }
     //if it's still not following
     void follow(USER* other){
-        this->following.insert(std::pair<std::string, USER>(other->username, *other));    //add other to this.following
-        other->followers.insert(std::pair<std::string, USER>(this->username, *this));    //add this to other.followers
+        this->following[other->username] = other;  //add other to this.following
+        other->followers[this->username] = this;   //add this to other.followers  
     }
     //get the User other from following using username parameter
     void unfollow(std::string username){
@@ -95,42 +95,51 @@ public:
         if (user == following.end())                    //if other is null then return
             return;
         following.erase(user);                          //remove other from following
-        user->second.followers.erase(this->username);   //remove this from other.followers
+        user->second->followers.erase(this->username);   //remove this from other.followers
     }
     //retrieve the tweet from inbox and uses method like
     void like(int twId){
-        std::map<int, MESSAGE*> msg = inbox->getAll();
-        auto it = this->inbox->getAll().find(twId);
+        std::map<int, MESSAGE*> msg = inbox.getAll();
+        auto it = this->inbox.getAll().find(twId);
         if (it != msg.end())
             it->second->like(this->username);
         msg.clear();
     }
     //return inbox object
-    std::shared_ptr<INBOX> getInbox(){
+    INBOX getInbox(){
         return this->inbox;
     }
     //Store the message in the user's inbox
     //Put the message as an unread message in each of the follower's inbox
-    void sendTweet(MESSAGE tw){
-        this->inbox->receiveNew(tw);
+    void sendTweet(MESSAGE* tw){
+        this->inbox.receiveNew(tw);
     }
     //show all followers and following by name
     std::string toString(){
         std::string os {this->username + "\n\tseguidos [ "};
         for (auto fol : this->following)
-            os += fol.second.username + " ";
+            os += fol.second->username + " ";
             
         os += "]\n\tseguidores [ ";
         for (auto seg : this->followers)
-            os += seg.second.username + " ";
+            os += seg.second->username + " ";
         os += "]";
+        return os;
+    }
+
+    std::string posts(){
+        std::string os;
+        for (auto fll : following) {
+            os += fll.second->inbox.toString();
+        }
         return os;
     }
 };
 
 class SYSTEM {
-    std::map<std::string, USER> users;
-    std::map<int, MESSAGE> messages;
+    std::map<std::string, USER*> users;
+    std::map<int, MESSAGE*> messages;
+    int twId {0};
 
 public:
     // addUser
@@ -139,12 +148,12 @@ public:
         if (it != users.end())
             throw std::runtime_error("fail: nome de usuario ja usado");
         else
-            users.insert(std::pair<std::string, USER>(nome, USER(nome)));
+            users[nome] = new USER(nome);
     }
     // show
     friend std::ostream& operator<<(std::ostream& os, const SYSTEM& system){
         for (auto user : system.users)
-            os << user.second.toString() << "\n";
+            os << user.second->toString() << "\n";
         return os;
     }
     // follow
@@ -154,7 +163,7 @@ public:
             throw std::runtime_error("fail: nome de usuario nao encontrado");
         else {
             auto sg = users.find(seguido);
-            sr->second.follow(&sg->second);
+            sr->second->follow(sg->second);
         }
     }
     // twittar
@@ -163,25 +172,29 @@ public:
         if (us == users.end())
             throw std::runtime_error("fail: nome de usuario nao encontrado");
         else {
-            messages.insert(std::pair<int, MESSAGE>(messages.size(), MESSAGE(messages.size(), user, msg)));
-            auto send = messages.find(messages.size());
-            us->second.sendTweet(send->second);
+            us->second->sendTweet(new MESSAGE(twId, user, msg));
+            twId++;
         }
     }
     // timeline
+    std::string timeline(std::string user){
+        auto us = users.find(user);
+        std::string msg;
+        if (us == users.end())
+            throw std::runtime_error("fail: nome de usuario nao encontrado");
+        else {
+            std::map<int, MESSAGE*> unread = us->second->getInbox().getUnread();
+            for (auto m : unread)
+                msg += m.second->toString();
+        }
+        
+        return msg;
+    }
     // like
     // unfollow
 };
 
 int main(){
-    /*USER eu("gabriel");
-    USER ca("carlos");
-
-    eu.follow(&ca);
-
-    std::cout << eu.toString() << std::endl;
-    std::cout << ca.toString() << std::endl;*/
-
     SYSTEM control;
 
     std::cout << "SEU SISTEMA ESTA PRONTO" << std::endl;
@@ -214,8 +227,13 @@ int main(){
                 std::string userName;
                 std::string msg;
                 ss >> userName;
-                std::cin >> msg;
-                control.twittar(userName, msg);
+                getline(ss, msg);
+                control.twittar(userName, msg.substr(1));
+            }
+            else if (cmd == "timeline") {
+                std::string userName;
+                ss >> userName;
+                std::cout << control.timeline(userName) << std::endl;
             }
             else {
                 std::cout << "fail: comando invalido" << std::endl;
