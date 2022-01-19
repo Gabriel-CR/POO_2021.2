@@ -20,16 +20,30 @@ public:
     }
     //add username to likes collection
     void like(std::string username){
+        std::cout << "like - MSG" << std::endl;
         likes.insert(username);
     }
     //mount output string
-    std::string toString(){
-        std::string os {this->username + " (" + msg + ") ["};
-        for (auto like : likes)
-            os += like;
-        os += "]\n";
+    friend std::ostream& operator<<(std::ostream& os, const MESSAGE& msg){
+        os << msg.id << ":" << msg.username << " (" << msg.msg << ") [";
+        for (auto like : msg.likes) {
+            std::cout << "toStr - MSG" << std::endl;
+            os << like << " ";
+        }
+        os << "]\n";
         return os;
     }
+
+    /*std::string toString(){
+        std::string os {this->username + " (" + msg + ") ["};
+        for (const auto& like : this->likes) {
+            std::cout << "toStr - MSG" << std::endl;
+            os += like + " ";
+        }
+            
+        os += "]\n";
+        return os;
+    }*/
 };
 
 class INBOX {
@@ -67,11 +81,16 @@ public:
             return *it->second;
     }
     // return unread
-    std::string toString(){
-        std::string os;
-        for (auto msg : this->getUnread())
-            os += std::to_string(msg.first) + ":" + msg.second->toString();
+    /*friend std::ostream& operator<<(std::ostream& os, const INBOX& inbox){
+        for (auto msg : inbox.unread)
+            os << "\t" << *msg.second;
         return os;
+    }*/
+
+    void toString(){
+        std::string os;
+        for (auto& msg : this->getAll())
+            std::cout << "\t" << *msg.second;
     }
 };
 
@@ -116,7 +135,7 @@ public:
         this->inbox.receiveNew(tw);
     }
     //show all followers and following by name
-    std::string toString(){
+    /*std::string toString(){
         std::string os {this->username + "\n\tseguidos [ "};
         for (auto fol : this->following)
             os += fol.second->username + " ";
@@ -126,15 +145,27 @@ public:
             os += seg.second->username + " ";
         os += "]";
         return os;
+    }*/
+
+    friend std::ostream& operator<<(std::ostream& os, const USER& user){
+        os << user.username << "\n\tseguidos [ ";
+        for (auto follow : user.following)
+            os << follow.second->username << " ";
+        
+        os << "]\n\tseguidores [ ";
+        for (auto seguidor : user.followers)
+            os << seguidor.second->username << " ";
+        os << "]";
+        return os;
     }
 
-    std::string getPosts(){
+    /*std::string getPosts(){
         std::string msg;
         for (auto follow : this->following) {
-            msg += follow.second->getInbox().toString();
+            msg += follow.second->getInbox();
         }
         return msg;
-    }
+    }*/
 };
 
 class SYSTEM {
@@ -154,7 +185,7 @@ public:
     // show
     friend std::ostream& operator<<(std::ostream& os, const SYSTEM& system){
         for (auto user : system.users)
-            os << user.second->toString() << "\n";
+            os << *user.second << "\n";
         return os;
     }
     // follow
@@ -174,6 +205,7 @@ public:
             throw std::runtime_error("fail: nome de usuario nao encontrado");
         else {
             us->second->sendTweet(new MESSAGE(twId, user, msg));
+            this->messages[twId] = new MESSAGE(twId, user, msg);
             twId++;
         }
     }
@@ -183,17 +215,17 @@ public:
         if (us == users.end())
             throw std::runtime_error("fail: nome de usuario nao encontrado");
         else {
-            std::cout << us->second->getPosts();
+            us->second->getInbox().toString();
         }
     }
     // like
     void like(std::string user, int id){
+        std::cout << "like - CTRL" << std::endl;
         auto msg = this->messages.find(id);
         if (msg == messages.end())
             throw std::runtime_error("fail: menssagem nao encontrada");
         else
-            msg->second->like(user);
-        messages[id]->like(user);
+            messages[id]->like(user);
     }
     // unfollow
 };
