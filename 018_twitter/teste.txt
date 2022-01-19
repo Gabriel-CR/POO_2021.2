@@ -19,3 +19,6 @@ timeline tina
 
 timeline sara
 
+like sara 1
+like goku 1
+like sara 3
