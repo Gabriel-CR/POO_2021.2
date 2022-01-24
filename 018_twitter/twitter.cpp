@@ -5,25 +5,13 @@
 #include <memory>
 #include <sstream>
 
-class MessageException : public std::exception {
-   std::string message;
-public:
-    MessageException(const std::string& message) : 
-        message(message) {
-    }
-    const char* what() const noexcept override {
-        return message.c_str(); 
-    }
-};
-
 class Message {
     int id;
     std::string username;
     std::string msg;
     std::set<std::string> likes;
 public:
-    Message(int id, const std::string& username, const std::string& msg) : 
-        id{id}, username{username}, msg{msg} {
+    Message(int id, const std::string& username, const std::string& msg) : id{id}, username{username}, msg{msg} {
     }
     int getId() const {
         return this->id;
@@ -32,10 +20,10 @@ public:
         likes.insert(username);
     }
     friend std::ostream& operator<<(std::ostream& os, const Message& msg){
-        os << msg.id << ":" << msg.username << " (" << msg.msg << ") [";
-        for (auto like : msg.likes) {
-            os << like << " ";
-        }
+        os << msg.id << ":" << msg.username << " (" << msg.msg << ")\t[ ";
+        if (!msg.likes.empty())
+            for (auto like : msg.likes)
+                os << like << " ";
         os << "]\n";
         return os;
     }
@@ -51,7 +39,7 @@ public:
         std::vector<Message*> messages;
         for (auto& msg : unread) {
             messages.push_back(msg.second);
-            this->storeReaded(msg.second);
+            //this->storeReaded(msg.second);
         }
         unread.clear();
         if (messages.size() == 0)
@@ -66,10 +54,15 @@ public:
     }
     Message* getTweet(int id){
         auto message = allMsgs.find(id);
+        if (message == allMsgs.end()) {
+            throw std::runtime_error("fail: Tweet nao encontrado");
+            return nullptr;
+        }
         return message->second;
     }
     void storeUnread(Message* tweet){
         this->unread[tweet->getId()] = tweet;
+        this->storeReaded(tweet);
     }
     void storeReaded(Message* tweet){
         this->allMsgs[tweet->getId()] = tweet;
@@ -87,8 +80,7 @@ class User {
     std::map<std::string, User*> followers;
     std::map<std::string, User*> following;
 public:
-    User(const std::string& username) : 
-        username(username) {
+    User(const std::string& username) : username(username) {
     }
     void sendTweet(Message* msg){
         inbox.storeUnread(msg);
@@ -106,7 +98,7 @@ public:
         this->following.erase(user);
     }
     void like(int twId){
-        auto message = inbox.getTweet(twId);
+        Message* message = inbox.getTweet(twId);
         message->like(this->username);
     }
     Inbox& getInbox(){
@@ -115,11 +107,11 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const User& user);
 };
 std::ostream& operator<<(std::ostream& os, const User& user){
-    os << user.username << "\n\tseguidos [ ";
+    os << user.username << "\n  seguidos\t[ ";
     for (auto follow : user.following)
         os << follow.second->username << " ";
     
-    os << "]\n\tseguidores [ ";
+    os << "]\n  seguidores\t[ ";
     for (auto seguidor : user.followers)
         os << seguidor.second->username << " ";
     os << "]";
@@ -163,9 +155,9 @@ public:
         }   
     }
     void timeline(std::string user){
-        std::vector<Message*> messages = this->getUser(user)->getInbox().getUnread();
+        std::vector<Message*> messages = this->getUser(user)->getInbox().getAll();
         for (auto msg : messages)
-            std::cout << *msg;
+            std::cout << *msg << std::endl;
     }
     friend std::ostream& operator<<(std::ostream& os, const Controller& ctrl);
 };
@@ -194,7 +186,7 @@ int main(){
             else if (cmd == "show") {
                 std::cout << control;
             }
-            else if (cmd == "addUser") {
+            else if (cmd == "add") {
                 std::string userName;
                 ss >> userName;
                 control.addUser(userName);
