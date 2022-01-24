@@ -1,6 +1,6 @@
-addUser goku
-addUser sara
-addUser tina
+add goku
+add sara
+add tina
 show
 follow goku sara
 follow goku tina
@@ -14,17 +14,20 @@ twittar tina chocolate ruim
 twittar goku internet maldita
 
 timeline goku
-
 timeline tina
-
 timeline sara
 
 like sara 1
 like goku 1
 like sara 3
 
-timeline sara
+unfollow goku tina
+show
 
 timeline goku
 
-unfollow goku tina
+// RT
+timeline sara
+rt sara 3 olha goku, ela nao gostou do seu chocolate
+timeline sara
+timeline goku

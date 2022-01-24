@@ -10,6 +10,7 @@ class Message {
     std::string username;
     std::string msg;
     std::set<std::string> likes;
+    std::vector<Message*> rts;
 public:
     Message(int id, const std::string& username, const std::string& msg) : id{id}, username{username}, msg{msg} {
     }
@@ -19,12 +20,28 @@ public:
     void like(const std::string& username){
         likes.insert(username);
     }
+    std::string getSender() const {
+        return this->username;
+    }
+    void setRt(Message* msg){
+        rts.push_back(msg);
+    }
     friend std::ostream& operator<<(std::ostream& os, const Message& msg){
-        os << msg.id << ":" << msg.username << " (" << msg.msg << ")\t[ ";
-        if (!msg.likes.empty())
+        os << msg.id << ":" << msg.username << " (" << msg.msg << ")";
+        if (!msg.likes.empty()) {
+            os << " [ ";
             for (auto like : msg.likes)
                 os << like << " ";
-        os << "]\n";
+            os << "]\n";
+        }
+        else {
+            os << "\n";
+        }
+        if (msg.rts.size() > 0) {
+            for (auto rt : msg.rts) {
+                os << "   " << rt->id << ":" << rt->username << " (" << rt->msg << ") " << "\n";
+            }
+        }
         return os;
     }
 };
@@ -37,10 +54,8 @@ public:
     }
     std::vector<Message*> getUnread(){
         std::vector<Message*> messages;
-        for (auto& msg : unread) {
+        for (auto& msg : unread)
             messages.push_back(msg.second);
-            //this->storeReaded(msg.second);
-        }
         unread.clear();
         if (messages.size() == 0)
             throw std::runtime_error("[caixa de entrada vazia]");
@@ -67,9 +82,22 @@ public:
     void storeReaded(Message* tweet){
         this->allMsgs[tweet->getId()] = tweet;
     }
+    void removeMsg(std::string username){
+        // MONTAR LISTA COM ID's PARA REMOVER
+        std::vector<int> rmIds;
+        for (auto& msg : allMsgs) {
+            if (msg.second->getSender() == username) {
+                rmIds.push_back(msg.first);
+            }
+        }
+        // REMOVER ID's LISTADOS
+        for (int id : rmIds) {
+            allMsgs.erase(id);
+        }   
+    }
     friend std::ostream& operator<<(std::ostream& os, Inbox& inbox){
         for (auto msg : inbox.getUnread())
-            os << "\t" << *msg;
+            os << *msg << "\n";
         return os;
     }
 };
@@ -96,6 +124,7 @@ public:
         auto user2 = user->second->followers.find(this->username);
         user->second->followers.erase(user2);
         this->following.erase(user);
+        this->inbox.removeMsg(username);
     }
     void like(int twId){
         Message* message = inbox.getTweet(twId);
@@ -157,7 +186,16 @@ public:
     void timeline(std::string user){
         std::vector<Message*> messages = this->getUser(user)->getInbox().getAll();
         for (auto msg : messages)
-            std::cout << *msg << std::endl;
+            std::cout << *msg;
+        std::cout << "\n";
+    }
+    void sendRt(std::string username, int twid, std::string msg){
+        User* user = getUser(username);
+        if (user != nullptr) {
+            Message* message = createMsg(username, msg);
+            user->getInbox().getTweet(twid)->setRt(message);
+            //user->sendTweet(message);
+        }
     }
     friend std::ostream& operator<<(std::ostream& os, const Controller& ctrl);
 };
@@ -184,7 +222,7 @@ int main(){
                 break;
             }
             else if (cmd == "show") {
-                std::cout << control;
+                std::cout << control << std::endl;
             }
             else if (cmd == "add") {
                 std::string userName;
@@ -217,6 +255,13 @@ int main(){
                 int id;
                 ss >> userName >> id;
                 control.getUser(userName)->like(id);
+            }
+            else if (cmd == "rt") {
+                std::string userName, msg;
+                int id;
+                ss >> userName >> id;
+                getline(ss, msg);
+                control.sendRt(userName, id, msg.substr(1));
             }
             else {
                 std::cout << "fail: Comando invalido" << std::endl;
