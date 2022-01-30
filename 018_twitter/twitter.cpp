@@ -26,6 +26,13 @@ public:
     void setRt(Message* msg){
         rts.push_back(msg);
     }
+    void remove(){
+        this->username = "nullptr";
+        this->msg = "nullptr";
+        this->likes.clear();
+        for (int i = 0; i < (int)rts.size(); i++)
+            this->rts.erase(rts.begin() + i);
+    }
     friend std::ostream& operator<<(std::ostream& os, const Message& msg){
         os << msg.id << ":" << msg.username << " (" << msg.msg << ")";
         if (!msg.likes.empty()) {
@@ -133,6 +140,15 @@ public:
     Inbox& getInbox(){
         return this->inbox;
     }
+    void removeUser(){
+        std::map<std::string, User*> follow = this->following;
+        for (auto fl : follow)
+            this->unfollow(fl.first);
+
+        std::map<std::string, User*> follower = this->followers;
+        for (auto flw : follower)
+            flw.second->unfollow(this->username);
+    }
     friend std::ostream& operator<<(std::ostream& os, const User& user);
 };
 std::ostream& operator<<(std::ostream& os, const User& user){
@@ -190,12 +206,23 @@ public:
         std::cout << "\n";
     }
     void sendRt(std::string username, int twid, std::string msg){
-        User* user = getUser(username);
+        User* user = this->getUser(username);
         if (user != nullptr) {
-            Message* message = createMsg(username, msg);
-            user->getInbox().getTweet(twid)->setRt(message);
-            //user->sendTweet(message);
+            Message* message = this->createMsg(username, msg);
+            auto rTw = this->tweets.find(twid);
+            message->setRt(&*rTw->second);
+            user->sendTweet(message);
+            this->tweets.insert(std::pair<int, std::shared_ptr<Message>>(rTw->second->getId(), rTw->second));
         }
+    }
+    void remove(std::string username){
+        User* us = this->getUser(username);
+        for (auto tw : us->getInbox().getAll()) {
+            tw->remove();
+            this->tweets.erase(tw->getId());
+        }
+        us->removeUser();
+        this->users.erase(username);
     }
     friend std::ostream& operator<<(std::ostream& os, const Controller& ctrl);
 };
@@ -262,6 +289,11 @@ int main(){
                 ss >> userName >> id;
                 getline(ss, msg);
                 control.sendRt(userName, id, msg.substr(1));
+            }
+            else if (cmd == "rm") {
+                std::string userName;
+                ss >> userName;
+                control.remove(userName);
             }
             else {
                 std::cout << "fail: Comando invalido" << std::endl;
